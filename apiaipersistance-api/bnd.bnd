@@ -1,0 +1,10 @@
+Bundle-Name: apiaipersistance-api
+Bundle-SymbolicName: com.liferay.kris.apiai.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.kris.apiai.exception,\
+	com.liferay.kris.apiai.model,\
+	com.liferay.kris.apiai.service,\
+	com.liferay.kris.apiai.service.persistence
+-includeresource: META-INF/service.xml=../apiaipersistance-service/service.xml
+

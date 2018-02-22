@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.liferay.kris.apiai.model.ApiAiData">
+		<field name="uuid" type="String" />
+		<field name="apiAiDataId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="type" type="String" />
+		<field name="result" type="String" />
+		<field name="action" type="String" />
+		<field name="fulfillment" type="String" />
+		<field name="speech" type="String" />
+	</model>
+</model-hints>
