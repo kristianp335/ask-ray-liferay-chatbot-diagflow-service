@@ -130,7 +130,13 @@ public class ApiAiDataLocalServiceImpl extends ApiAiDataLocalServiceBaseImpl {
 		DynamicQuery dynamicQuery = super.dynamicQuery();
 		dynamicQuery.add(RestrictionsFactoryUtil.between("createDate", oneDayBefore, oneDayAfter));
 		dynamicQuery.add(RestrictionsFactoryUtil.eq("userId", userId));
-		List<ApiAiData> apiAiData = super.dynamicQuery(dynamicQuery, 0, 100);
+		int endValue = super.dynamicQuery(dynamicQuery).size();
+		int startValue = 0;
+		if (endValue > 6) {
+			startValue = endValue - 6;
+		}
+		
+		List<ApiAiData> apiAiData = super.dynamicQuery(dynamicQuery, startValue, endValue);
 		return apiAiData;
 	}	
 }
