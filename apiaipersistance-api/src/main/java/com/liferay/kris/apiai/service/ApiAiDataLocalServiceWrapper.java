@@ -321,8 +321,10 @@ public class ApiAiDataLocalServiceWrapper implements ApiAiDataLocalService,
 
 	@Override
 	public java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
-		com.liferay.portal.kernel.service.ServiceContext serviceContext) {
-		return _apiAiDataLocalService.getRecentConversation(serviceContext);
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		int records) {
+		return _apiAiDataLocalService.getRecentConversation(serviceContext,
+			records);
 	}
 
 	/**

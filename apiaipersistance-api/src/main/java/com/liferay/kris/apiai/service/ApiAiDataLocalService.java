@@ -274,7 +274,8 @@ public interface ApiAiDataLocalService extends BaseLocalService,
 		OrderByComparator<ApiAiData> orderByComparator);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<ApiAiData> getRecentConversation(ServiceContext serviceContext);
+	public List<ApiAiData> getRecentConversation(
+		ServiceContext serviceContext, int records);
 
 	/**
 	* Returns the number of rows matching the dynamic query.

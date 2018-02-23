@@ -117,7 +117,7 @@ public class ApiAiDataLocalServiceImpl extends ApiAiDataLocalServiceBaseImpl {
 		
 	}
 	
-	public List<ApiAiData> getRecentConversation(ServiceContext serviceContext) {
+	public List<ApiAiData> getRecentConversation(ServiceContext serviceContext, int records) {
 		long userId = serviceContext.getUserId();
 		Date today = new Date();
 		Calendar cal = Calendar.getInstance();
@@ -132,8 +132,8 @@ public class ApiAiDataLocalServiceImpl extends ApiAiDataLocalServiceBaseImpl {
 		dynamicQuery.add(RestrictionsFactoryUtil.eq("userId", userId));
 		int endValue = super.dynamicQuery(dynamicQuery).size();
 		int startValue = 0;
-		if (endValue > 6) {
-			startValue = endValue - 6;
+		if (endValue > records) {
+			startValue = endValue - records;
 		}
 		
 		List<ApiAiData> apiAiData = super.dynamicQuery(dynamicQuery, startValue, endValue);

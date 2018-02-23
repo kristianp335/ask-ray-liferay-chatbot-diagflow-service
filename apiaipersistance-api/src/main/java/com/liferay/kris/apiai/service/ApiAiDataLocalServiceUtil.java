@@ -305,8 +305,9 @@ public class ApiAiDataLocalServiceUtil {
 	}
 
 	public static java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
-		com.liferay.portal.kernel.service.ServiceContext serviceContext) {
-		return getService().getRecentConversation(serviceContext);
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		int records) {
+		return getService().getRecentConversation(serviceContext, records);
 	}
 
 	/**
