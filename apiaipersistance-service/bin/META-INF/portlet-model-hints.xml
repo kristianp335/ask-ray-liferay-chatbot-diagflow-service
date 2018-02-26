@@ -11,9 +11,17 @@
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
 		<field name="type" type="String" />
-		<field name="result" type="String" />
-		<field name="action" type="String" />
-		<field name="fulfillment" type="String" />
-		<field name="speech" type="String" />
+		<field name="result" type="String">
+			<hint name="max-length">500</hint>
+		</field>
+		<field name="action" type="String">
+			<hint name="max-length">500</hint>
+		</field>
+		<field name="fulfillment" type="String">
+			<hint name="max-length">500</hint>
+		</field>
+		<field name="speech" type="String">
+			<hint name="max-length">500</hint>
+		</field>
 	</model>
 </model-hints>
