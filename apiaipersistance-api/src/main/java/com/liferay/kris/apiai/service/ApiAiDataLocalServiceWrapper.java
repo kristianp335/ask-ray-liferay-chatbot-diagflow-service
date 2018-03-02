@@ -16,7 +16,11 @@ package com.liferay.kris.apiai.service;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.kris.apiai.model.ApiAiData;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
+
+import java.util.List;
 
 /**
  * Provides a wrapper for {@link ApiAiDataLocalService}.
@@ -326,6 +330,13 @@ public class ApiAiDataLocalServiceWrapper implements ApiAiDataLocalService,
 		return _apiAiDataLocalService.getRecentConversation(serviceContext,
 			records);
 	}
+	
+	@Override
+	public List<ApiAiData> getRecentConversation(ServiceContext serviceContext, int records, String sortOrder) {
+		// TODO Auto-generated method stub
+		return _apiAiDataLocalService.getRecentConversation(serviceContext,
+				records,sortOrder);
+	}
 
 	/**
 	* Returns the number of rows matching the dynamic query.
@@ -364,4 +375,6 @@ public class ApiAiDataLocalServiceWrapper implements ApiAiDataLocalService,
 	}
 
 	private ApiAiDataLocalService _apiAiDataLocalService;
+
+	
 }

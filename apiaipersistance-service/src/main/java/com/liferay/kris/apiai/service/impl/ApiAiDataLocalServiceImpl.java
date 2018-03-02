@@ -24,6 +24,8 @@ import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
 import com.liferay.kris.apiai.model.ApiAiData;
 import com.liferay.kris.apiai.service.base.ApiAiDataLocalServiceBaseImpl;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Order;
+import com.liferay.portal.kernel.dao.orm.OrderFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -138,5 +140,36 @@ public class ApiAiDataLocalServiceImpl extends ApiAiDataLocalServiceBaseImpl {
 		
 		List<ApiAiData> apiAiData = super.dynamicQuery(dynamicQuery, startValue, endValue);
 		return apiAiData;
-	}	
+	}
+	
+	public List<ApiAiData> getRecentConversation(ServiceContext serviceContext, int records, String sortOrder) {
+		long userId = serviceContext.getUserId();
+		Date today = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(today);
+		cal.add(Calendar.DATE, -1);
+		Date oneDayBefore = cal.getTime();
+		Calendar calAfter = Calendar.getInstance();
+		calAfter.add(Calendar.DATE, 1);
+		Date oneDayAfter = calAfter.getTime();
+		DynamicQuery dynamicQuery = super.dynamicQuery();
+		dynamicQuery.add(RestrictionsFactoryUtil.between("createDate", oneDayBefore, oneDayAfter));
+		dynamicQuery.add(RestrictionsFactoryUtil.eq("userId", userId));
+		
+		Order order = OrderFactoryUtil.asc("apiAiDataId");
+		if (sortOrder != null && sortOrder.equalsIgnoreCase("desc")) {
+			order = OrderFactoryUtil.desc("apiAiDataId");
+		}
+		System.out.println("order by: " + sortOrder);
+		dynamicQuery.addOrder(order);
+		
+		int endValue = super.dynamicQuery(dynamicQuery).size();
+		int startValue = 0;
+		if (endValue > records) {
+			startValue = endValue - records;
+		}
+		
+		List<ApiAiData> apiAiData = super.dynamicQuery(dynamicQuery, startValue, endValue);
+		return apiAiData;
+	}
 }
