@@ -156,6 +156,7 @@ public class ApiAiDataLocalServiceImpl extends ApiAiDataLocalServiceBaseImpl {
 		dynamicQuery.add(RestrictionsFactoryUtil.between("createDate", oneDayBefore, oneDayAfter));
 		dynamicQuery.add(RestrictionsFactoryUtil.eq("userId", userId));
 		
+		
 		Order order = OrderFactoryUtil.asc("apiAiDataId");
 		if (sortOrder != null && sortOrder.equalsIgnoreCase("desc")) {
 			order = OrderFactoryUtil.desc("apiAiDataId");

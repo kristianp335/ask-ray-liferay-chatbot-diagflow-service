@@ -43,6 +43,13 @@ public class ApiAiDataServiceWrapper implements ApiAiDataService,
 	}
 
 	@Override
+	public java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		int records) {
+		return _apiAiDataService.getRecentConversation(serviceContext, records);
+	}
+
+	@Override
 	public ApiAiDataService getWrappedService() {
 		return _apiAiDataService;
 	}

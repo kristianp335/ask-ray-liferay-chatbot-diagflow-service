@@ -16,7 +16,11 @@ package com.liferay.kris.apiai.service.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import java.util.List;
+
+import com.liferay.kris.apiai.model.ApiAiData;
 import com.liferay.kris.apiai.service.base.ApiAiDataServiceBaseImpl;
+import com.liferay.portal.kernel.service.ServiceContext;
 
 /**
  * The implementation of the api ai data remote service.
@@ -34,9 +38,11 @@ import com.liferay.kris.apiai.service.base.ApiAiDataServiceBaseImpl;
  */
 @ProviderType
 public class ApiAiDataServiceImpl extends ApiAiDataServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.kris.apiai.service.ApiAiDataServiceUtil} to access the api ai data remote service.
-	 */
+
+	
+	public List<ApiAiData> getRecentConversation(ServiceContext serviceContext, int records ) {
+		List<ApiAiData>	apiAiData = apiAiDataLocalService.getRecentConversation(serviceContext, records);
+		return apiAiData;		
+	}
+	
 }

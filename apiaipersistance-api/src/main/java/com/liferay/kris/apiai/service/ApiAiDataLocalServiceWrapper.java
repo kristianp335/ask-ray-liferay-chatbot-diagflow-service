@@ -16,11 +16,7 @@ package com.liferay.kris.apiai.service;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.kris.apiai.model.ApiAiData;
-import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
-
-import java.util.List;
 
 /**
  * Provides a wrapper for {@link ApiAiDataLocalService}.
@@ -330,12 +326,13 @@ public class ApiAiDataLocalServiceWrapper implements ApiAiDataLocalService,
 		return _apiAiDataLocalService.getRecentConversation(serviceContext,
 			records);
 	}
-	
+
 	@Override
-	public List<ApiAiData> getRecentConversation(ServiceContext serviceContext, int records, String sortOrder) {
-		// TODO Auto-generated method stub
+	public java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		int records, java.lang.String sortOrder) {
 		return _apiAiDataLocalService.getRecentConversation(serviceContext,
-				records,sortOrder);
+			records, sortOrder);
 	}
 
 	/**
@@ -375,6 +372,4 @@ public class ApiAiDataLocalServiceWrapper implements ApiAiDataLocalService,
 	}
 
 	private ApiAiDataLocalService _apiAiDataLocalService;
-
-	
 }

@@ -310,6 +310,13 @@ public class ApiAiDataLocalServiceUtil {
 		return getService().getRecentConversation(serviceContext, records);
 	}
 
+	public static java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		int records, java.lang.String sortOrder) {
+		return getService()
+				   .getRecentConversation(serviceContext, records, sortOrder);
+	}
+
 	/**
 	* Returns the number of rows matching the dynamic query.
 	*

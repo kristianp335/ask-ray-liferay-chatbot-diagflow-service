@@ -51,6 +51,12 @@ public class ApiAiDataServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
+	public static java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		int records) {
+		return getService().getRecentConversation(serviceContext, records);
+	}
+
 	public static ApiAiDataService getService() {
 		return _serviceTracker.getService();
 	}

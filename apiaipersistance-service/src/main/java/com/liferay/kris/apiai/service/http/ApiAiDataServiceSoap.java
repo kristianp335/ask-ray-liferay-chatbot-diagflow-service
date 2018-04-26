@@ -16,9 +16,16 @@ package com.liferay.kris.apiai.service.http;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.kris.apiai.service.ApiAiDataServiceUtil;
+
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * Provides the SOAP utility for the
- * {@link com.liferay.kris.apiai.service.ApiAiDataServiceUtil} service utility. The
+ * {@link ApiAiDataServiceUtil} service utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it is difficult for SOAP to
  * support certain types.
@@ -53,9 +60,26 @@ import aQute.bnd.annotation.ProviderType;
  * @author Brian Wing Shun Chan
  * @see ApiAiDataServiceHttp
  * @see com.liferay.kris.apiai.model.ApiAiDataSoap
- * @see com.liferay.kris.apiai.service.ApiAiDataServiceUtil
+ * @see ApiAiDataServiceUtil
  * @generated
  */
 @ProviderType
 public class ApiAiDataServiceSoap {
+	public static com.liferay.kris.apiai.model.ApiAiDataSoap[] getRecentConversation(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		int records) throws RemoteException {
+		try {
+			java.util.List<com.liferay.kris.apiai.model.ApiAiData> returnValue = ApiAiDataServiceUtil.getRecentConversation(serviceContext,
+					records);
+
+			return com.liferay.kris.apiai.model.ApiAiDataSoap.toSoapModels(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(ApiAiDataServiceSoap.class);
 }

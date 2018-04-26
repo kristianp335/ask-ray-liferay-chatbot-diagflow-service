@@ -1,9 +1,8 @@
-#Fri Mar 02 12:35:15 CET 2018
-connection.gradle.distribution=GRADLE_DISTRIBUTION(WRAPPER)
-derived.resources=.gradle,build
-connection.java.home=null
 connection.arguments=
-eclipse.preferences.version=1
+connection.gradle.distribution=GRADLE_DISTRIBUTION(WRAPPER)
+connection.java.home=null
 connection.jvm.arguments=
+connection.project.dir=..\\..
+derived.resources=.gradle,build
+eclipse.preferences.version=1
 project.path=\:modules\:apiaipersistance
-connection.project.dir=../..

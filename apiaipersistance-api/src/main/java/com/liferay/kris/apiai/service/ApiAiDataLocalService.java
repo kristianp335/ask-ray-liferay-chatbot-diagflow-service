@@ -276,10 +276,10 @@ public interface ApiAiDataLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<ApiAiData> getRecentConversation(
 		ServiceContext serviceContext, int records);
-	
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<ApiAiData> getRecentConversation(
-		ServiceContext serviceContext, int records, String sortOrder);
+		ServiceContext serviceContext, int records, java.lang.String sortOrder);
 
 	/**
 	* Returns the number of rows matching the dynamic query.
