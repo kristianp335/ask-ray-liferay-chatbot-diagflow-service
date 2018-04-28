@@ -32,6 +32,16 @@ public class ApiAiDataServiceWrapper implements ApiAiDataService,
 		_apiAiDataService = apiAiDataService;
 	}
 
+	@Override
+	public java.lang.String addApiAiDataPersistence(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		java.lang.String query, java.lang.String authtoken,
+		java.lang.String speech, java.lang.String action,
+		java.lang.String fulfillment, java.lang.String result) {
+		return _apiAiDataService.addApiAiDataPersistence(serviceContext, query,
+			authtoken, speech, action, fulfillment, result);
+	}
+
 	/**
 	* Returns the OSGi service identifier.
 	*

@@ -85,8 +85,47 @@ public class ApiAiDataServiceHttp {
 		}
 	}
 
+	public static java.lang.String addApiAiDataPersistence(
+		HttpPrincipal httpPrincipal,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		java.lang.String query, java.lang.String authtoken,
+		java.lang.String speech, java.lang.String action,
+		java.lang.String fulfillment, java.lang.String result) {
+		try {
+			MethodKey methodKey = new MethodKey(ApiAiDataServiceUtil.class,
+					"addApiAiDataPersistence",
+					_addApiAiDataPersistenceParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey,
+					serviceContext, query, authtoken, speech, action,
+					fulfillment, result);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+
+			return (java.lang.String)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(ApiAiDataServiceHttp.class);
 	private static final Class<?>[] _getRecentConversationParameterTypes0 = new Class[] {
 			com.liferay.portal.kernel.service.ServiceContext.class, int.class
+		};
+	private static final Class<?>[] _addApiAiDataPersistenceParameterTypes1 = new Class[] {
+			com.liferay.portal.kernel.service.ServiceContext.class,
+			java.lang.String.class, java.lang.String.class,
+			java.lang.String.class, java.lang.String.class,
+			java.lang.String.class, java.lang.String.class
 		};
 }

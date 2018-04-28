@@ -81,5 +81,24 @@ public class ApiAiDataServiceSoap {
 		}
 	}
 
+	public static java.lang.String addApiAiDataPersistence(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		java.lang.String query, java.lang.String authtoken,
+		java.lang.String speech, java.lang.String action,
+		java.lang.String fulfillment, java.lang.String result)
+		throws RemoteException {
+		try {
+			java.lang.String returnValue = ApiAiDataServiceUtil.addApiAiDataPersistence(serviceContext,
+					query, authtoken, speech, action, fulfillment, result);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(ApiAiDataServiceSoap.class);
 }

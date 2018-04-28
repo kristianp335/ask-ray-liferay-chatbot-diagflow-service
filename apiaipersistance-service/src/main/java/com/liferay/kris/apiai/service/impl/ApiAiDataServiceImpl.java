@@ -45,4 +45,10 @@ public class ApiAiDataServiceImpl extends ApiAiDataServiceBaseImpl {
 		return apiAiData;		
 	}
 	
+	public String addApiAiDataPersistence(ServiceContext serviceContext, String query, String authtoken, String speech, String action, String fulfillment, String result) {
+		String response = apiAiDataLocalService.addApiAiData(serviceContext, query, authtoken, speech, action, fulfillment, result);
+		return response;		
+	}
+	
+	
 }

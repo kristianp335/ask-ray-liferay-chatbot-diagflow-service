@@ -41,6 +41,15 @@ public class ApiAiDataServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to {@link com.liferay.kris.apiai.service.impl.ApiAiDataServiceImpl} and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static java.lang.String addApiAiDataPersistence(
+		com.liferay.portal.kernel.service.ServiceContext serviceContext,
+		java.lang.String query, java.lang.String authtoken,
+		java.lang.String speech, java.lang.String action,
+		java.lang.String fulfillment, java.lang.String result) {
+		return getService()
+				   .addApiAiDataPersistence(serviceContext, query, authtoken,
+			speech, action, fulfillment, result);
+	}
 
 	/**
 	* Returns the OSGi service identifier.

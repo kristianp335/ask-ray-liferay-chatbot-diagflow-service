@@ -55,6 +55,11 @@ public interface ApiAiDataService extends BaseService {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link ApiAiDataServiceUtil} to access the api ai data remote service. Add custom service methods to {@link com.liferay.kris.apiai.service.impl.ApiAiDataServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public java.lang.String addApiAiDataPersistence(
+		ServiceContext serviceContext, java.lang.String query,
+		java.lang.String authtoken, java.lang.String speech,
+		java.lang.String action, java.lang.String fulfillment,
+		java.lang.String result);
 
 	/**
 	* Returns the OSGi service identifier.
