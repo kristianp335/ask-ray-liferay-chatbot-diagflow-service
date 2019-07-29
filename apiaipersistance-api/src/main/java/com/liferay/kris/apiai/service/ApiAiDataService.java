@@ -17,7 +17,6 @@ package com.liferay.kris.apiai.service;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.kris.apiai.model.ApiAiData;
-
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -38,37 +37,42 @@ import java.util.List;
  *
  * @author Brian Wing Shun Chan
  * @see ApiAiDataServiceUtil
- * @see com.liferay.kris.apiai.service.base.ApiAiDataServiceBaseImpl
- * @see com.liferay.kris.apiai.service.impl.ApiAiDataServiceImpl
  * @generated
  */
 @AccessControlled
 @JSONWebService
-@OSGiBeanProperties(property =  {
-	"json.web.service.context.name=apiai", "json.web.service.context.path=ApiAiData"}, service = ApiAiDataService.class)
+@OSGiBeanProperties(
+	property = {
+		"json.web.service.context.name=apiai",
+		"json.web.service.context.path=ApiAiData"
+	},
+	service = ApiAiDataService.class
+)
 @ProviderType
-@Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
-	PortalException.class, SystemException.class})
+@Transactional(
+	isolation = Isolation.PORTAL,
+	rollbackFor = {PortalException.class, SystemException.class}
+)
 public interface ApiAiDataService extends BaseService {
+
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never modify or reference this interface directly. Always use {@link ApiAiDataServiceUtil} to access the api ai data remote service. Add custom service methods to {@link com.liferay.kris.apiai.service.impl.ApiAiDataServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
+	 * Never modify or reference this interface directly. Always use {@link ApiAiDataServiceUtil} to access the api ai data remote service. Add custom service methods to <code>com.liferay.kris.apiai.service.impl.ApiAiDataServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
-	public java.lang.String addApiAiDataPersistence(
-		ServiceContext serviceContext, java.lang.String query,
-		java.lang.String authtoken, java.lang.String speech,
-		java.lang.String action, java.lang.String fulfillment,
-		java.lang.String result);
+	public String addApiAiDataPersistence(
+		ServiceContext serviceContext, String query, String authtoken,
+		String speech, String action, String fulfillment, String result);
 
 	/**
-	* Returns the OSGi service identifier.
-	*
-	* @return the OSGi service identifier
-	*/
-	public java.lang.String getOSGiServiceIdentifier();
+	 * Returns the OSGi service identifier.
+	 *
+	 * @return the OSGi service identifier
+	 */
+	public String getOSGiServiceIdentifier();
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<ApiAiData> getRecentConversation(
 		ServiceContext serviceContext, int records);
+
 }

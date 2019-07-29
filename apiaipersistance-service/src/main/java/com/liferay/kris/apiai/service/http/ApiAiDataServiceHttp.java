@@ -17,7 +17,6 @@ package com.liferay.kris.apiai.service.http;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.kris.apiai.service.ApiAiDataServiceUtil;
-
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.auth.HttpPrincipal;
@@ -27,10 +26,11 @@ import com.liferay.portal.kernel.util.MethodKey;
 
 /**
  * Provides the HTTP utility for the
- * {@link ApiAiDataServiceUtil} service utility. The
+ * <code>ApiAiDataServiceUtil</code> service
+ * utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it requires an additional
- * {@link HttpPrincipal} parameter.
+ * <code>HttpPrincipal</code> parameter.
  *
  * <p>
  * The benefits of using the HTTP utility is that it is fast and allows for
@@ -49,23 +49,24 @@ import com.liferay.portal.kernel.util.MethodKey;
  *
  * @author Brian Wing Shun Chan
  * @see ApiAiDataServiceSoap
- * @see HttpPrincipal
- * @see ApiAiDataServiceUtil
  * @generated
  */
 @ProviderType
 public class ApiAiDataServiceHttp {
-	public static java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
-		HttpPrincipal httpPrincipal,
-		com.liferay.portal.kernel.service.ServiceContext serviceContext,
-		int records) {
-		try {
-			MethodKey methodKey = new MethodKey(ApiAiDataServiceUtil.class,
-					"getRecentConversation",
-					_getRecentConversationParameterTypes0);
 
-			MethodHandler methodHandler = new MethodHandler(methodKey,
-					serviceContext, records);
+	public static java.util.List<com.liferay.kris.apiai.model.ApiAiData>
+		getRecentConversation(
+			HttpPrincipal httpPrincipal,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext,
+			int records) {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				ApiAiDataServiceUtil.class, "getRecentConversation",
+				_getRecentConversationParameterTypes0);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, serviceContext, records);
 
 			Object returnObj = null;
 
@@ -73,10 +74,12 @@ public class ApiAiDataServiceHttp {
 				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
 			}
 			catch (Exception e) {
-				throw new com.liferay.portal.kernel.exception.SystemException(e);
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					e);
 			}
 
-			return (java.util.List<com.liferay.kris.apiai.model.ApiAiData>)returnObj;
+			return (java.util.List<com.liferay.kris.apiai.model.ApiAiData>)
+				returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -85,20 +88,20 @@ public class ApiAiDataServiceHttp {
 		}
 	}
 
-	public static java.lang.String addApiAiDataPersistence(
+	public static String addApiAiDataPersistence(
 		HttpPrincipal httpPrincipal,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext,
-		java.lang.String query, java.lang.String authtoken,
-		java.lang.String speech, java.lang.String action,
-		java.lang.String fulfillment, java.lang.String result) {
-		try {
-			MethodKey methodKey = new MethodKey(ApiAiDataServiceUtil.class,
-					"addApiAiDataPersistence",
-					_addApiAiDataPersistenceParameterTypes1);
+		String query, String authtoken, String speech, String action,
+		String fulfillment, String result) {
 
-			MethodHandler methodHandler = new MethodHandler(methodKey,
-					serviceContext, query, authtoken, speech, action,
-					fulfillment, result);
+		try {
+			MethodKey methodKey = new MethodKey(
+				ApiAiDataServiceUtil.class, "addApiAiDataPersistence",
+				_addApiAiDataPersistenceParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, serviceContext, query, authtoken, speech, action,
+				fulfillment, result);
 
 			Object returnObj = null;
 
@@ -106,10 +109,11 @@ public class ApiAiDataServiceHttp {
 				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
 			}
 			catch (Exception e) {
-				throw new com.liferay.portal.kernel.exception.SystemException(e);
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					e);
 			}
 
-			return (java.lang.String)returnObj;
+			return (String)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -119,13 +123,16 @@ public class ApiAiDataServiceHttp {
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(ApiAiDataServiceHttp.class);
-	private static final Class<?>[] _getRecentConversationParameterTypes0 = new Class[] {
+
+	private static final Class<?>[] _getRecentConversationParameterTypes0 =
+		new Class[] {
 			com.liferay.portal.kernel.service.ServiceContext.class, int.class
 		};
-	private static final Class<?>[] _addApiAiDataPersistenceParameterTypes1 = new Class[] {
+	private static final Class<?>[] _addApiAiDataPersistenceParameterTypes1 =
+		new Class[] {
 			com.liferay.portal.kernel.service.ServiceContext.class,
-			java.lang.String.class, java.lang.String.class,
-			java.lang.String.class, java.lang.String.class,
-			java.lang.String.class, java.lang.String.class
+			String.class, String.class, String.class, String.class,
+			String.class, String.class
 		};
+
 }

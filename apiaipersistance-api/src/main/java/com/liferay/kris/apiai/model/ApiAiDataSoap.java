@@ -26,11 +26,11 @@ import java.util.List;
  * This class is used by SOAP remote services, specifically {@link com.liferay.kris.apiai.service.http.ApiAiDataServiceSoap}.
  *
  * @author Brian Wing Shun Chan
- * @see com.liferay.kris.apiai.service.http.ApiAiDataServiceSoap
  * @generated
  */
 @ProviderType
 public class ApiAiDataSoap implements Serializable {
+
 	public static ApiAiDataSoap toSoapModel(ApiAiData model) {
 		ApiAiDataSoap soapModel = new ApiAiDataSoap();
 
@@ -79,7 +79,8 @@ public class ApiAiDataSoap implements Serializable {
 	}
 
 	public static ApiAiDataSoap[] toSoapModels(List<ApiAiData> models) {
-		List<ApiAiDataSoap> soapModels = new ArrayList<ApiAiDataSoap>(models.size());
+		List<ApiAiDataSoap> soapModels = new ArrayList<ApiAiDataSoap>(
+			models.size());
 
 		for (ApiAiData model : models) {
 			soapModels.add(toSoapModel(model));
@@ -216,4 +217,5 @@ public class ApiAiDataSoap implements Serializable {
 	private String _action;
 	private String _fulfillment;
 	private String _speech;
+
 }

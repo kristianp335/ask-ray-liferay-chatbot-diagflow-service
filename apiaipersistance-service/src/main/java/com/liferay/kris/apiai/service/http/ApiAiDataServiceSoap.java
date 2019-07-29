@@ -17,7 +17,6 @@ package com.liferay.kris.apiai.service.http;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.kris.apiai.service.ApiAiDataServiceUtil;
-
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
@@ -25,19 +24,20 @@ import java.rmi.RemoteException;
 
 /**
  * Provides the SOAP utility for the
- * {@link ApiAiDataServiceUtil} service utility. The
- * static methods of this class calls the same methods of the service utility.
- * However, the signatures are different because it is difficult for SOAP to
- * support certain types.
+ * <code>ApiAiDataServiceUtil</code> service
+ * utility. The static methods of this class call the same methods of the
+ * service utility. However, the signatures are different because it is
+ * difficult for SOAP to support certain types.
  *
  * <p>
  * ServiceBuilder follows certain rules in translating the methods. For example,
- * if the method in the service utility returns a {@link java.util.List}, that
- * is translated to an array of {@link com.liferay.kris.apiai.model.ApiAiDataSoap}.
- * If the method in the service utility returns a
- * {@link com.liferay.kris.apiai.model.ApiAiData}, that is translated to a
- * {@link com.liferay.kris.apiai.model.ApiAiDataSoap}. Methods that SOAP cannot
- * safely wire are skipped.
+ * if the method in the service utility returns a <code>java.util.List</code>,
+ * that is translated to an array of
+ * <code>com.liferay.kris.apiai.model.ApiAiDataSoap</code>. If the method in the
+ * service utility returns a
+ * <code>com.liferay.kris.apiai.model.ApiAiData</code>, that is translated to a
+ * <code>com.liferay.kris.apiai.model.ApiAiDataSoap</code>. Methods that SOAP
+ * cannot safely wire are skipped.
  * </p>
  *
  * <p>
@@ -59,20 +59,24 @@ import java.rmi.RemoteException;
  *
  * @author Brian Wing Shun Chan
  * @see ApiAiDataServiceHttp
- * @see com.liferay.kris.apiai.model.ApiAiDataSoap
- * @see ApiAiDataServiceUtil
  * @generated
  */
 @ProviderType
 public class ApiAiDataServiceSoap {
-	public static com.liferay.kris.apiai.model.ApiAiDataSoap[] getRecentConversation(
-		com.liferay.portal.kernel.service.ServiceContext serviceContext,
-		int records) throws RemoteException {
-		try {
-			java.util.List<com.liferay.kris.apiai.model.ApiAiData> returnValue = ApiAiDataServiceUtil.getRecentConversation(serviceContext,
-					records);
 
-			return com.liferay.kris.apiai.model.ApiAiDataSoap.toSoapModels(returnValue);
+	public static com.liferay.kris.apiai.model.ApiAiDataSoap[]
+			getRecentConversation(
+				com.liferay.portal.kernel.service.ServiceContext serviceContext,
+				int records)
+		throws RemoteException {
+
+		try {
+			java.util.List<com.liferay.kris.apiai.model.ApiAiData> returnValue =
+				ApiAiDataServiceUtil.getRecentConversation(
+					serviceContext, records);
+
+			return com.liferay.kris.apiai.model.ApiAiDataSoap.toSoapModels(
+				returnValue);
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -81,15 +85,16 @@ public class ApiAiDataServiceSoap {
 		}
 	}
 
-	public static java.lang.String addApiAiDataPersistence(
-		com.liferay.portal.kernel.service.ServiceContext serviceContext,
-		java.lang.String query, java.lang.String authtoken,
-		java.lang.String speech, java.lang.String action,
-		java.lang.String fulfillment, java.lang.String result)
+	public static String addApiAiDataPersistence(
+			com.liferay.portal.kernel.service.ServiceContext serviceContext,
+			String query, String authtoken, String speech, String action,
+			String fulfillment, String result)
 		throws RemoteException {
+
 		try {
-			java.lang.String returnValue = ApiAiDataServiceUtil.addApiAiDataPersistence(serviceContext,
-					query, authtoken, speech, action, fulfillment, result);
+			String returnValue = ApiAiDataServiceUtil.addApiAiDataPersistence(
+				serviceContext, query, authtoken, speech, action, fulfillment,
+				result);
 
 			return returnValue;
 		}
@@ -101,4 +106,5 @@ public class ApiAiDataServiceSoap {
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(ApiAiDataServiceSoap.class);
+
 }

@@ -32,12 +32,13 @@ import com.liferay.kris.apiai.service.ApiAiDataLocalServiceUtil;
  * @generated
  */
 @ProviderType
-public abstract class ApiAiDataBaseImpl extends ApiAiDataModelImpl
-	implements ApiAiData {
+public abstract class ApiAiDataBaseImpl
+	extends ApiAiDataModelImpl implements ApiAiData {
+
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never modify or reference this class directly. All methods that expect a api ai data model instance should use the {@link ApiAiData} interface instead.
+	 * Never modify or reference this class directly. All methods that expect a api ai data model instance should use the <code>ApiAiData</code> interface instead.
 	 */
 	@Override
 	public void persist() {
@@ -48,4 +49,5 @@ public abstract class ApiAiDataBaseImpl extends ApiAiDataModelImpl
 			ApiAiDataLocalServiceUtil.updateApiAiData(this);
 		}
 	}
+
 }

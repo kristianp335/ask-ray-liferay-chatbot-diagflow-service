@@ -21,7 +21,6 @@ import com.liferay.kris.apiai.model.ApiAiData;
 import com.liferay.kris.apiai.model.impl.ApiAiDataImpl;
 import com.liferay.kris.apiai.model.impl.ApiAiDataModelImpl;
 import com.liferay.kris.apiai.service.persistence.ApiAiDataPersistence;
-
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -37,14 +36,17 @@ import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.sql.Timestamp;
 
@@ -66,50 +68,32 @@ import java.util.Set;
  * </p>
  *
  * @author Brian Wing Shun Chan
- * @see ApiAiDataPersistence
- * @see com.liferay.kris.apiai.service.persistence.ApiAiDataUtil
  * @generated
  */
 @ProviderType
-public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
-	implements ApiAiDataPersistence {
+public class ApiAiDataPersistenceImpl
+	extends BasePersistenceImpl<ApiAiData> implements ApiAiDataPersistence {
+
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never modify or reference this class directly. Always use {@link ApiAiDataUtil} to access the api ai data persistence. Modify <code>service.xml</code> and rerun ServiceBuilder to regenerate this class.
+	 * Never modify or reference this class directly. Always use <code>ApiAiDataUtil</code> to access the api ai data persistence. Modify <code>service.xml</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static final String FINDER_CLASS_NAME_ENTITY = ApiAiDataImpl.class.getName();
-	public static final String FINDER_CLASS_NAME_LIST_WITH_PAGINATION = FINDER_CLASS_NAME_ENTITY +
-		".List1";
-	public static final String FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION = FINDER_CLASS_NAME_ENTITY +
-		".List2";
-	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_ALL = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
-	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0]);
-	public static final FinderPath FINDER_PATH_COUNT_ALL = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll", new String[0]);
-	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_UUID = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid",
-			new String[] {
-				String.class.getName(),
-				
-			Integer.class.getName(), Integer.class.getName(),
-				OrderByComparator.class.getName()
-			});
-	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid",
-			new String[] { String.class.getName() },
-			ApiAiDataModelImpl.UUID_COLUMN_BITMASK);
-	public static final FinderPath FINDER_PATH_COUNT_BY_UUID = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid",
-			new String[] { String.class.getName() });
+	public static final String FINDER_CLASS_NAME_ENTITY =
+		ApiAiDataImpl.class.getName();
+
+	public static final String FINDER_CLASS_NAME_LIST_WITH_PAGINATION =
+		FINDER_CLASS_NAME_ENTITY + ".List1";
+
+	public static final String FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION =
+		FINDER_CLASS_NAME_ENTITY + ".List2";
+
+	private FinderPath _finderPathWithPaginationFindAll;
+	private FinderPath _finderPathWithoutPaginationFindAll;
+	private FinderPath _finderPathCountAll;
+	private FinderPath _finderPathWithPaginationFindByUuid;
+	private FinderPath _finderPathWithoutPaginationFindByUuid;
+	private FinderPath _finderPathCountByUuid;
 
 	/**
 	 * Returns all the api ai datas where uuid = &#63;.
@@ -126,7 +110,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns a range of all the api ai datas where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -143,7 +127,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns an ordered range of all the api ai datas where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -153,8 +137,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUuid(String uuid, int start, int end,
+	public List<ApiAiData> findByUuid(
+		String uuid, int start, int end,
 		OrderByComparator<ApiAiData> orderByComparator) {
+
 		return findByUuid(uuid, start, end, orderByComparator, true);
 	}
 
@@ -162,7 +148,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns an ordered range of all the api ai datas where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -173,33 +159,38 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUuid(String uuid, int start, int end,
+	public List<ApiAiData> findByUuid(
+		String uuid, int start, int end,
 		OrderByComparator<ApiAiData> orderByComparator,
 		boolean retrieveFromCache) {
+
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-				(orderByComparator == null)) {
+			(orderByComparator == null)) {
+
 			pagination = false;
-			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID;
-			finderArgs = new Object[] { uuid };
+			finderPath = _finderPathWithoutPaginationFindByUuid;
+			finderArgs = new Object[] {uuid};
 		}
 		else {
-			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_UUID;
-			finderArgs = new Object[] { uuid, start, end, orderByComparator };
+			finderPath = _finderPathWithPaginationFindByUuid;
+			finderArgs = new Object[] {uuid, start, end, orderByComparator};
 		}
 
 		List<ApiAiData> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<ApiAiData>)finderCache.getResult(finderPath,
-					finderArgs, this);
+			list = (List<ApiAiData>)finderCache.getResult(
+				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ApiAiData apiAiData : list) {
-					if (!Objects.equals(uuid, apiAiData.getUuid())) {
+					if (!uuid.equals(apiAiData.getUuid())) {
 						list = null;
 
 						break;
@@ -212,8 +203,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			StringBundler query = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(3 +
-						(orderByComparator.getOrderByFields().length * 2));
+				query = new StringBundler(
+					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
 				query = new StringBundler(3);
@@ -223,10 +214,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -236,11 +224,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			}
 
 			if (orderByComparator != null) {
-				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else
-			 if (pagination) {
+			else if (pagination) {
 				query.append(ApiAiDataModelImpl.ORDER_BY_JPQL);
 			}
 
@@ -260,16 +247,16 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 				}
 
 				if (!pagination) {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end, false);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end, false);
 
 					Collections.sort(list);
 
 					list = Collections.unmodifiableList(list);
 				}
 				else {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end);
 				}
 
 				cacheResult(list);
@@ -298,9 +285,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData findByUuid_First(String uuid,
-		OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData findByUuid_First(
+			String uuid, OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
+
 		ApiAiData apiAiData = fetchByUuid_First(uuid, orderByComparator);
 
 		if (apiAiData != null) {
@@ -314,7 +302,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchApiAiDataException(msg.toString());
 	}
@@ -327,8 +315,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the first matching api ai data, or <code>null</code> if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData fetchByUuid_First(String uuid,
-		OrderByComparator<ApiAiData> orderByComparator) {
+	public ApiAiData fetchByUuid_First(
+		String uuid, OrderByComparator<ApiAiData> orderByComparator) {
+
 		List<ApiAiData> list = findByUuid(uuid, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
@@ -347,9 +336,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData findByUuid_Last(String uuid,
-		OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData findByUuid_Last(
+			String uuid, OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
+
 		ApiAiData apiAiData = fetchByUuid_Last(uuid, orderByComparator);
 
 		if (apiAiData != null) {
@@ -363,7 +353,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchApiAiDataException(msg.toString());
 	}
@@ -376,16 +366,17 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the last matching api ai data, or <code>null</code> if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData fetchByUuid_Last(String uuid,
-		OrderByComparator<ApiAiData> orderByComparator) {
+	public ApiAiData fetchByUuid_Last(
+		String uuid, OrderByComparator<ApiAiData> orderByComparator) {
+
 		int count = countByUuid(uuid);
 
 		if (count == 0) {
 			return null;
 		}
 
-		List<ApiAiData> list = findByUuid(uuid, count - 1, count,
-				orderByComparator);
+		List<ApiAiData> list = findByUuid(
+			uuid, count - 1, count, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -404,9 +395,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a api ai data with the primary key could not be found
 	 */
 	@Override
-	public ApiAiData[] findByUuid_PrevAndNext(long apiAiDataId, String uuid,
-		OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData[] findByUuid_PrevAndNext(
+			long apiAiDataId, String uuid,
+			OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
+
+		uuid = Objects.toString(uuid, "");
+
 		ApiAiData apiAiData = findByPrimaryKey(apiAiDataId);
 
 		Session session = null;
@@ -416,13 +411,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			ApiAiData[] array = new ApiAiDataImpl[3];
 
-			array[0] = getByUuid_PrevAndNext(session, apiAiData, uuid,
-					orderByComparator, true);
+			array[0] = getByUuid_PrevAndNext(
+				session, apiAiData, uuid, orderByComparator, true);
 
 			array[1] = apiAiData;
 
-			array[2] = getByUuid_PrevAndNext(session, apiAiData, uuid,
-					orderByComparator, false);
+			array[2] = getByUuid_PrevAndNext(
+				session, apiAiData, uuid, orderByComparator, false);
 
 			return array;
 		}
@@ -434,14 +429,15 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		}
 	}
 
-	protected ApiAiData getByUuid_PrevAndNext(Session session,
-		ApiAiData apiAiData, String uuid,
+	protected ApiAiData getByUuid_PrevAndNext(
+		Session session, ApiAiData apiAiData, String uuid,
 		OrderByComparator<ApiAiData> orderByComparator, boolean previous) {
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(4 +
-					(orderByComparator.getOrderByConditionFields().length * 3) +
+			query = new StringBundler(
+				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
@@ -452,10 +448,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -465,7 +458,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		}
 
 		if (orderByComparator != null) {
-			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
 				query.append(WHERE_AND);
@@ -537,10 +531,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		}
 
 		if (orderByComparator != null) {
-			Object[] values = orderByComparator.getOrderByConditionValues(apiAiData);
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(apiAiData)) {
 
-			for (Object value : values) {
-				qPos.add(value);
+				qPos.add(orderByConditionValue);
 			}
 		}
 
@@ -561,8 +555,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public void removeByUuid(String uuid) {
-		for (ApiAiData apiAiData : findByUuid(uuid, QueryUtil.ALL_POS,
-				QueryUtil.ALL_POS, null)) {
+		for (ApiAiData apiAiData :
+				findByUuid(uuid, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+
 			remove(apiAiData);
 		}
 	}
@@ -575,9 +570,11 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
-		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
+		uuid = Objects.toString(uuid, "");
 
-		Object[] finderArgs = new Object[] { uuid };
+		FinderPath finderPath = _finderPathCountByUuid;
+
+		Object[] finderArgs = new Object[] {uuid};
 
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
@@ -588,10 +585,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -632,22 +626,17 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		return count.intValue();
 	}
 
-	private static final String _FINDER_COLUMN_UUID_UUID_1 = "apiAiData.uuid IS NULL";
-	private static final String _FINDER_COLUMN_UUID_UUID_2 = "apiAiData.uuid = ?";
-	private static final String _FINDER_COLUMN_UUID_UUID_3 = "(apiAiData.uuid IS NULL OR apiAiData.uuid = '')";
-	public static final FinderPath FINDER_PATH_FETCH_BY_UUID_G = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_ENTITY, "fetchByUUID_G",
-			new String[] { String.class.getName(), Long.class.getName() },
-			ApiAiDataModelImpl.UUID_COLUMN_BITMASK |
-			ApiAiDataModelImpl.GROUPID_COLUMN_BITMASK);
-	public static final FinderPath FINDER_PATH_COUNT_BY_UUID_G = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUUID_G",
-			new String[] { String.class.getName(), Long.class.getName() });
+	private static final String _FINDER_COLUMN_UUID_UUID_2 =
+		"apiAiData.uuid = ?";
+
+	private static final String _FINDER_COLUMN_UUID_UUID_3 =
+		"(apiAiData.uuid IS NULL OR apiAiData.uuid = '')";
+
+	private FinderPath _finderPathFetchByUUID_G;
+	private FinderPath _finderPathCountByUUID_G;
 
 	/**
-	 * Returns the api ai data where uuid = &#63; and groupId = &#63; or throws a {@link NoSuchApiAiDataException} if it could not be found.
+	 * Returns the api ai data where uuid = &#63; and groupId = &#63; or throws a <code>NoSuchApiAiDataException</code> if it could not be found.
 	 *
 	 * @param uuid the uuid
 	 * @param groupId the group ID
@@ -657,6 +646,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	@Override
 	public ApiAiData findByUUID_G(String uuid, long groupId)
 		throws NoSuchApiAiDataException {
+
 		ApiAiData apiAiData = fetchByUUID_G(uuid, groupId);
 
 		if (apiAiData == null) {
@@ -670,7 +660,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			msg.append(", groupId=");
 			msg.append(groupId);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -703,22 +693,26 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the matching api ai data, or <code>null</code> if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData fetchByUUID_G(String uuid, long groupId,
-		boolean retrieveFromCache) {
-		Object[] finderArgs = new Object[] { uuid, groupId };
+	public ApiAiData fetchByUUID_G(
+		String uuid, long groupId, boolean retrieveFromCache) {
+
+		uuid = Objects.toString(uuid, "");
+
+		Object[] finderArgs = new Object[] {uuid, groupId};
 
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = finderCache.getResult(FINDER_PATH_FETCH_BY_UUID_G,
-					finderArgs, this);
+			result = finderCache.getResult(
+				_finderPathFetchByUUID_G, finderArgs, this);
 		}
 
 		if (result instanceof ApiAiData) {
 			ApiAiData apiAiData = (ApiAiData)result;
 
 			if (!Objects.equals(uuid, apiAiData.getUuid()) ||
-					(groupId != apiAiData.getGroupId())) {
+				(groupId != apiAiData.getGroupId())) {
+
 				result = null;
 			}
 		}
@@ -730,10 +724,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -764,8 +755,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 				List<ApiAiData> list = q.list();
 
 				if (list.isEmpty()) {
-					finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G,
-						finderArgs, list);
+					finderCache.putResult(
+						_finderPathFetchByUUID_G, finderArgs, list);
 				}
 				else {
 					ApiAiData apiAiData = list.get(0);
@@ -773,17 +764,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 					result = apiAiData;
 
 					cacheResult(apiAiData);
-
-					if ((apiAiData.getUuid() == null) ||
-							!apiAiData.getUuid().equals(uuid) ||
-							(apiAiData.getGroupId() != groupId)) {
-						finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G,
-							finderArgs, apiAiData);
-					}
 				}
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, finderArgs);
+				finderCache.removeResult(_finderPathFetchByUUID_G, finderArgs);
 
 				throw processException(e);
 			}
@@ -810,6 +794,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	@Override
 	public ApiAiData removeByUUID_G(String uuid, long groupId)
 		throws NoSuchApiAiDataException {
+
 		ApiAiData apiAiData = findByUUID_G(uuid, groupId);
 
 		return remove(apiAiData);
@@ -824,9 +809,11 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
-		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
+		uuid = Objects.toString(uuid, "");
 
-		Object[] finderArgs = new Object[] { uuid, groupId };
+		FinderPath finderPath = _finderPathCountByUUID_G;
+
+		Object[] finderArgs = new Object[] {uuid, groupId};
 
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
@@ -837,10 +824,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -885,30 +869,18 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		return count.intValue();
 	}
 
-	private static final String _FINDER_COLUMN_UUID_G_UUID_1 = "apiAiData.uuid IS NULL AND ";
-	private static final String _FINDER_COLUMN_UUID_G_UUID_2 = "apiAiData.uuid = ? AND ";
-	private static final String _FINDER_COLUMN_UUID_G_UUID_3 = "(apiAiData.uuid IS NULL OR apiAiData.uuid = '') AND ";
-	private static final String _FINDER_COLUMN_UUID_G_GROUPID_2 = "apiAiData.groupId = ?";
-	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_UUID_C = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid_C",
-			new String[] {
-				String.class.getName(), Long.class.getName(),
-				
-			Integer.class.getName(), Integer.class.getName(),
-				OrderByComparator.class.getName()
-			});
-	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C =
-		new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid_C",
-			new String[] { String.class.getName(), Long.class.getName() },
-			ApiAiDataModelImpl.UUID_COLUMN_BITMASK |
-			ApiAiDataModelImpl.COMPANYID_COLUMN_BITMASK);
-	public static final FinderPath FINDER_PATH_COUNT_BY_UUID_C = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid_C",
-			new String[] { String.class.getName(), Long.class.getName() });
+	private static final String _FINDER_COLUMN_UUID_G_UUID_2 =
+		"apiAiData.uuid = ? AND ";
+
+	private static final String _FINDER_COLUMN_UUID_G_UUID_3 =
+		"(apiAiData.uuid IS NULL OR apiAiData.uuid = '') AND ";
+
+	private static final String _FINDER_COLUMN_UUID_G_GROUPID_2 =
+		"apiAiData.groupId = ?";
+
+	private FinderPath _finderPathWithPaginationFindByUuid_C;
+	private FinderPath _finderPathWithoutPaginationFindByUuid_C;
+	private FinderPath _finderPathCountByUuid_C;
 
 	/**
 	 * Returns all the api ai datas where uuid = &#63; and companyId = &#63;.
@@ -919,15 +891,15 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public List<ApiAiData> findByUuid_C(String uuid, long companyId) {
-		return findByUuid_C(uuid, companyId, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS, null);
+		return findByUuid_C(
+			uuid, companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
 	/**
 	 * Returns a range of all the api ai datas where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -937,8 +909,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUuid_C(String uuid, long companyId, int start,
-		int end) {
+	public List<ApiAiData> findByUuid_C(
+		String uuid, long companyId, int start, int end) {
+
 		return findByUuid_C(uuid, companyId, start, end, null);
 	}
 
@@ -946,7 +919,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns an ordered range of all the api ai datas where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -957,16 +930,19 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUuid_C(String uuid, long companyId, int start,
-		int end, OrderByComparator<ApiAiData> orderByComparator) {
-		return findByUuid_C(uuid, companyId, start, end, orderByComparator, true);
+	public List<ApiAiData> findByUuid_C(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<ApiAiData> orderByComparator) {
+
+		return findByUuid_C(
+			uuid, companyId, start, end, orderByComparator, true);
 	}
 
 	/**
 	 * Returns an ordered range of all the api ai datas where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -978,38 +954,42 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUuid_C(String uuid, long companyId, int start,
-		int end, OrderByComparator<ApiAiData> orderByComparator,
+	public List<ApiAiData> findByUuid_C(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<ApiAiData> orderByComparator,
 		boolean retrieveFromCache) {
+
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-				(orderByComparator == null)) {
+			(orderByComparator == null)) {
+
 			pagination = false;
-			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C;
-			finderArgs = new Object[] { uuid, companyId };
+			finderPath = _finderPathWithoutPaginationFindByUuid_C;
+			finderArgs = new Object[] {uuid, companyId};
 		}
 		else {
-			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_UUID_C;
+			finderPath = _finderPathWithPaginationFindByUuid_C;
 			finderArgs = new Object[] {
-					uuid, companyId,
-					
-					start, end, orderByComparator
-				};
+				uuid, companyId, start, end, orderByComparator
+			};
 		}
 
 		List<ApiAiData> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<ApiAiData>)finderCache.getResult(finderPath,
-					finderArgs, this);
+			list = (List<ApiAiData>)finderCache.getResult(
+				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ApiAiData apiAiData : list) {
-					if (!Objects.equals(uuid, apiAiData.getUuid()) ||
-							(companyId != apiAiData.getCompanyId())) {
+					if (!uuid.equals(apiAiData.getUuid()) ||
+						(companyId != apiAiData.getCompanyId())) {
+
 						list = null;
 
 						break;
@@ -1022,8 +1002,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			StringBundler query = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(4 +
-						(orderByComparator.getOrderByFields().length * 2));
+				query = new StringBundler(
+					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
 				query = new StringBundler(4);
@@ -1033,10 +1013,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1048,11 +1025,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
 
 			if (orderByComparator != null) {
-				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else
-			 if (pagination) {
+			else if (pagination) {
 				query.append(ApiAiDataModelImpl.ORDER_BY_JPQL);
 			}
 
@@ -1074,16 +1050,16 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 				qPos.add(companyId);
 
 				if (!pagination) {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end, false);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end, false);
 
 					Collections.sort(list);
 
 					list = Collections.unmodifiableList(list);
 				}
 				else {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end);
 				}
 
 				cacheResult(list);
@@ -1113,11 +1089,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData findByUuid_C_First(String uuid, long companyId,
-		OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData findByUuid_C_First(
+			String uuid, long companyId,
+			OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
-		ApiAiData apiAiData = fetchByUuid_C_First(uuid, companyId,
-				orderByComparator);
+
+		ApiAiData apiAiData = fetchByUuid_C_First(
+			uuid, companyId, orderByComparator);
 
 		if (apiAiData != null) {
 			return apiAiData;
@@ -1133,7 +1111,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchApiAiDataException(msg.toString());
 	}
@@ -1147,10 +1125,12 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the first matching api ai data, or <code>null</code> if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData fetchByUuid_C_First(String uuid, long companyId,
+	public ApiAiData fetchByUuid_C_First(
+		String uuid, long companyId,
 		OrderByComparator<ApiAiData> orderByComparator) {
-		List<ApiAiData> list = findByUuid_C(uuid, companyId, 0, 1,
-				orderByComparator);
+
+		List<ApiAiData> list = findByUuid_C(
+			uuid, companyId, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -1169,11 +1149,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData findByUuid_C_Last(String uuid, long companyId,
-		OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData findByUuid_C_Last(
+			String uuid, long companyId,
+			OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
-		ApiAiData apiAiData = fetchByUuid_C_Last(uuid, companyId,
-				orderByComparator);
+
+		ApiAiData apiAiData = fetchByUuid_C_Last(
+			uuid, companyId, orderByComparator);
 
 		if (apiAiData != null) {
 			return apiAiData;
@@ -1189,7 +1171,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchApiAiDataException(msg.toString());
 	}
@@ -1203,16 +1185,18 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the last matching api ai data, or <code>null</code> if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData fetchByUuid_C_Last(String uuid, long companyId,
+	public ApiAiData fetchByUuid_C_Last(
+		String uuid, long companyId,
 		OrderByComparator<ApiAiData> orderByComparator) {
+
 		int count = countByUuid_C(uuid, companyId);
 
 		if (count == 0) {
 			return null;
 		}
 
-		List<ApiAiData> list = findByUuid_C(uuid, companyId, count - 1, count,
-				orderByComparator);
+		List<ApiAiData> list = findByUuid_C(
+			uuid, companyId, count - 1, count, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -1232,9 +1216,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a api ai data with the primary key could not be found
 	 */
 	@Override
-	public ApiAiData[] findByUuid_C_PrevAndNext(long apiAiDataId, String uuid,
-		long companyId, OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData[] findByUuid_C_PrevAndNext(
+			long apiAiDataId, String uuid, long companyId,
+			OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
+
+		uuid = Objects.toString(uuid, "");
+
 		ApiAiData apiAiData = findByPrimaryKey(apiAiDataId);
 
 		Session session = null;
@@ -1244,13 +1232,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			ApiAiData[] array = new ApiAiDataImpl[3];
 
-			array[0] = getByUuid_C_PrevAndNext(session, apiAiData, uuid,
-					companyId, orderByComparator, true);
+			array[0] = getByUuid_C_PrevAndNext(
+				session, apiAiData, uuid, companyId, orderByComparator, true);
 
 			array[1] = apiAiData;
 
-			array[2] = getByUuid_C_PrevAndNext(session, apiAiData, uuid,
-					companyId, orderByComparator, false);
+			array[2] = getByUuid_C_PrevAndNext(
+				session, apiAiData, uuid, companyId, orderByComparator, false);
 
 			return array;
 		}
@@ -1262,14 +1250,15 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		}
 	}
 
-	protected ApiAiData getByUuid_C_PrevAndNext(Session session,
-		ApiAiData apiAiData, String uuid, long companyId,
+	protected ApiAiData getByUuid_C_PrevAndNext(
+		Session session, ApiAiData apiAiData, String uuid, long companyId,
 		OrderByComparator<ApiAiData> orderByComparator, boolean previous) {
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(5 +
-					(orderByComparator.getOrderByConditionFields().length * 3) +
+			query = new StringBundler(
+				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
@@ -1280,10 +1269,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1295,7 +1281,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
 
 		if (orderByComparator != null) {
-			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
 				query.append(WHERE_AND);
@@ -1369,10 +1356,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		qPos.add(companyId);
 
 		if (orderByComparator != null) {
-			Object[] values = orderByComparator.getOrderByConditionValues(apiAiData);
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(apiAiData)) {
 
-			for (Object value : values) {
-				qPos.add(value);
+				qPos.add(orderByConditionValue);
 			}
 		}
 
@@ -1394,8 +1381,11 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public void removeByUuid_C(String uuid, long companyId) {
-		for (ApiAiData apiAiData : findByUuid_C(uuid, companyId,
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+		for (ApiAiData apiAiData :
+				findByUuid_C(
+					uuid, companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+					null)) {
+
 			remove(apiAiData);
 		}
 	}
@@ -1409,9 +1399,11 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
-		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
+		uuid = Objects.toString(uuid, "");
 
-		Object[] finderArgs = new Object[] { uuid, companyId };
+		FinderPath finderPath = _finderPathCountByUuid_C;
+
+		Object[] finderArgs = new Object[] {uuid, companyId};
 
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
@@ -1422,10 +1414,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1470,30 +1459,18 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		return count.intValue();
 	}
 
-	private static final String _FINDER_COLUMN_UUID_C_UUID_1 = "apiAiData.uuid IS NULL AND ";
-	private static final String _FINDER_COLUMN_UUID_C_UUID_2 = "apiAiData.uuid = ? AND ";
-	private static final String _FINDER_COLUMN_UUID_C_UUID_3 = "(apiAiData.uuid IS NULL OR apiAiData.uuid = '') AND ";
-	private static final String _FINDER_COLUMN_UUID_C_COMPANYID_2 = "apiAiData.companyId = ?";
-	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_USERID = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUserId",
-			new String[] {
-				Long.class.getName(), Date.class.getName(),
-				
-			Integer.class.getName(), Integer.class.getName(),
-				OrderByComparator.class.getName()
-			});
-	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID =
-		new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUserId",
-			new String[] { Long.class.getName(), Date.class.getName() },
-			ApiAiDataModelImpl.USERID_COLUMN_BITMASK |
-			ApiAiDataModelImpl.CREATEDATE_COLUMN_BITMASK);
-	public static final FinderPath FINDER_PATH_COUNT_BY_USERID = new FinderPath(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUserId",
-			new String[] { Long.class.getName(), Date.class.getName() });
+	private static final String _FINDER_COLUMN_UUID_C_UUID_2 =
+		"apiAiData.uuid = ? AND ";
+
+	private static final String _FINDER_COLUMN_UUID_C_UUID_3 =
+		"(apiAiData.uuid IS NULL OR apiAiData.uuid = '') AND ";
+
+	private static final String _FINDER_COLUMN_UUID_C_COMPANYID_2 =
+		"apiAiData.companyId = ?";
+
+	private FinderPath _finderPathWithPaginationFindByUserId;
+	private FinderPath _finderPathWithoutPaginationFindByUserId;
+	private FinderPath _finderPathCountByUserId;
 
 	/**
 	 * Returns all the api ai datas where userId = &#63; and createDate = &#63;.
@@ -1504,15 +1481,15 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public List<ApiAiData> findByUserId(long userId, Date createDate) {
-		return findByUserId(userId, createDate, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS, null);
+		return findByUserId(
+			userId, createDate, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
 
 	/**
 	 * Returns a range of all the api ai datas where userId = &#63; and createDate = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param userId the user ID
@@ -1522,8 +1499,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUserId(long userId, Date createDate,
-		int start, int end) {
+	public List<ApiAiData> findByUserId(
+		long userId, Date createDate, int start, int end) {
+
 		return findByUserId(userId, createDate, start, end, null);
 	}
 
@@ -1531,7 +1509,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns an ordered range of all the api ai datas where userId = &#63; and createDate = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param userId the user ID
@@ -1542,17 +1520,19 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUserId(long userId, Date createDate,
-		int start, int end, OrderByComparator<ApiAiData> orderByComparator) {
-		return findByUserId(userId, createDate, start, end, orderByComparator,
-			true);
+	public List<ApiAiData> findByUserId(
+		long userId, Date createDate, int start, int end,
+		OrderByComparator<ApiAiData> orderByComparator) {
+
+		return findByUserId(
+			userId, createDate, start, end, orderByComparator, true);
 	}
 
 	/**
 	 * Returns an ordered range of all the api ai datas where userId = &#63; and createDate = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param userId the user ID
@@ -1564,39 +1544,41 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of matching api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findByUserId(long userId, Date createDate,
-		int start, int end, OrderByComparator<ApiAiData> orderByComparator,
+	public List<ApiAiData> findByUserId(
+		long userId, Date createDate, int start, int end,
+		OrderByComparator<ApiAiData> orderByComparator,
 		boolean retrieveFromCache) {
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-				(orderByComparator == null)) {
+			(orderByComparator == null)) {
+
 			pagination = false;
-			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID;
-			finderArgs = new Object[] { userId, createDate };
+			finderPath = _finderPathWithoutPaginationFindByUserId;
+			finderArgs = new Object[] {userId, _getTime(createDate)};
 		}
 		else {
-			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_USERID;
+			finderPath = _finderPathWithPaginationFindByUserId;
 			finderArgs = new Object[] {
-					userId, createDate,
-					
-					start, end, orderByComparator
-				};
+				userId, _getTime(createDate), start, end, orderByComparator
+			};
 		}
 
 		List<ApiAiData> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<ApiAiData>)finderCache.getResult(finderPath,
-					finderArgs, this);
+			list = (List<ApiAiData>)finderCache.getResult(
+				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ApiAiData apiAiData : list) {
 					if ((userId != apiAiData.getUserId()) ||
-							!Objects.equals(createDate,
-								apiAiData.getCreateDate())) {
+						!Objects.equals(
+							createDate, apiAiData.getCreateDate())) {
+
 						list = null;
 
 						break;
@@ -1609,8 +1591,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			StringBundler query = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(4 +
-						(orderByComparator.getOrderByFields().length * 2));
+				query = new StringBundler(
+					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
 				query = new StringBundler(4);
@@ -1632,11 +1614,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			}
 
 			if (orderByComparator != null) {
-				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else
-			 if (pagination) {
+			else if (pagination) {
 				query.append(ApiAiDataModelImpl.ORDER_BY_JPQL);
 			}
 
@@ -1658,16 +1639,16 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 				}
 
 				if (!pagination) {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end, false);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end, false);
 
 					Collections.sort(list);
 
 					list = Collections.unmodifiableList(list);
 				}
 				else {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end);
 				}
 
 				cacheResult(list);
@@ -1697,11 +1678,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData findByUserId_First(long userId, Date createDate,
-		OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData findByUserId_First(
+			long userId, Date createDate,
+			OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
-		ApiAiData apiAiData = fetchByUserId_First(userId, createDate,
-				orderByComparator);
+
+		ApiAiData apiAiData = fetchByUserId_First(
+			userId, createDate, orderByComparator);
 
 		if (apiAiData != null) {
 			return apiAiData;
@@ -1717,7 +1700,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		msg.append(", createDate=");
 		msg.append(createDate);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchApiAiDataException(msg.toString());
 	}
@@ -1731,10 +1714,12 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the first matching api ai data, or <code>null</code> if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData fetchByUserId_First(long userId, Date createDate,
+	public ApiAiData fetchByUserId_First(
+		long userId, Date createDate,
 		OrderByComparator<ApiAiData> orderByComparator) {
-		List<ApiAiData> list = findByUserId(userId, createDate, 0, 1,
-				orderByComparator);
+
+		List<ApiAiData> list = findByUserId(
+			userId, createDate, 0, 1, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -1753,11 +1738,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData findByUserId_Last(long userId, Date createDate,
-		OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData findByUserId_Last(
+			long userId, Date createDate,
+			OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
-		ApiAiData apiAiData = fetchByUserId_Last(userId, createDate,
-				orderByComparator);
+
+		ApiAiData apiAiData = fetchByUserId_Last(
+			userId, createDate, orderByComparator);
 
 		if (apiAiData != null) {
 			return apiAiData;
@@ -1773,7 +1760,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		msg.append(", createDate=");
 		msg.append(createDate);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchApiAiDataException(msg.toString());
 	}
@@ -1787,16 +1774,18 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the last matching api ai data, or <code>null</code> if a matching api ai data could not be found
 	 */
 	@Override
-	public ApiAiData fetchByUserId_Last(long userId, Date createDate,
+	public ApiAiData fetchByUserId_Last(
+		long userId, Date createDate,
 		OrderByComparator<ApiAiData> orderByComparator) {
+
 		int count = countByUserId(userId, createDate);
 
 		if (count == 0) {
 			return null;
 		}
 
-		List<ApiAiData> list = findByUserId(userId, createDate, count - 1,
-				count, orderByComparator);
+		List<ApiAiData> list = findByUserId(
+			userId, createDate, count - 1, count, orderByComparator);
 
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -1816,9 +1805,11 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @throws NoSuchApiAiDataException if a api ai data with the primary key could not be found
 	 */
 	@Override
-	public ApiAiData[] findByUserId_PrevAndNext(long apiAiDataId, long userId,
-		Date createDate, OrderByComparator<ApiAiData> orderByComparator)
+	public ApiAiData[] findByUserId_PrevAndNext(
+			long apiAiDataId, long userId, Date createDate,
+			OrderByComparator<ApiAiData> orderByComparator)
 		throws NoSuchApiAiDataException {
+
 		ApiAiData apiAiData = findByPrimaryKey(apiAiDataId);
 
 		Session session = null;
@@ -1828,13 +1819,15 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 			ApiAiData[] array = new ApiAiDataImpl[3];
 
-			array[0] = getByUserId_PrevAndNext(session, apiAiData, userId,
-					createDate, orderByComparator, true);
+			array[0] = getByUserId_PrevAndNext(
+				session, apiAiData, userId, createDate, orderByComparator,
+				true);
 
 			array[1] = apiAiData;
 
-			array[2] = getByUserId_PrevAndNext(session, apiAiData, userId,
-					createDate, orderByComparator, false);
+			array[2] = getByUserId_PrevAndNext(
+				session, apiAiData, userId, createDate, orderByComparator,
+				false);
 
 			return array;
 		}
@@ -1846,14 +1839,15 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		}
 	}
 
-	protected ApiAiData getByUserId_PrevAndNext(Session session,
-		ApiAiData apiAiData, long userId, Date createDate,
+	protected ApiAiData getByUserId_PrevAndNext(
+		Session session, ApiAiData apiAiData, long userId, Date createDate,
 		OrderByComparator<ApiAiData> orderByComparator, boolean previous) {
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(5 +
-					(orderByComparator.getOrderByConditionFields().length * 3) +
+			query = new StringBundler(
+				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
@@ -1876,7 +1870,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		}
 
 		if (orderByComparator != null) {
-			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
 				query.append(WHERE_AND);
@@ -1950,10 +1945,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		}
 
 		if (orderByComparator != null) {
-			Object[] values = orderByComparator.getOrderByConditionValues(apiAiData);
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(apiAiData)) {
 
-			for (Object value : values) {
-				qPos.add(value);
+				qPos.add(orderByConditionValue);
 			}
 		}
 
@@ -1975,8 +1970,11 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public void removeByUserId(long userId, Date createDate) {
-		for (ApiAiData apiAiData : findByUserId(userId, createDate,
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+		for (ApiAiData apiAiData :
+				findByUserId(
+					userId, createDate, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+					null)) {
+
 			remove(apiAiData);
 		}
 	}
@@ -1990,9 +1988,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public int countByUserId(long userId, Date createDate) {
-		FinderPath finderPath = FINDER_PATH_COUNT_BY_USERID;
+		FinderPath finderPath = _finderPathCountByUserId;
 
-		Object[] finderArgs = new Object[] { userId, createDate };
+		Object[] finderArgs = new Object[] {userId, _getTime(createDate)};
 
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
@@ -2048,12 +2046,36 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		return count.intValue();
 	}
 
-	private static final String _FINDER_COLUMN_USERID_USERID_2 = "apiAiData.userId = ? AND ";
-	private static final String _FINDER_COLUMN_USERID_CREATEDATE_1 = "apiAiData.createDate IS NULL";
-	private static final String _FINDER_COLUMN_USERID_CREATEDATE_2 = "apiAiData.createDate = ?";
+	private static final String _FINDER_COLUMN_USERID_USERID_2 =
+		"apiAiData.userId = ? AND ";
+
+	private static final String _FINDER_COLUMN_USERID_CREATEDATE_1 =
+		"apiAiData.createDate IS NULL";
+
+	private static final String _FINDER_COLUMN_USERID_CREATEDATE_2 =
+		"apiAiData.createDate = ?";
 
 	public ApiAiDataPersistenceImpl() {
 		setModelClass(ApiAiData.class);
+
+		Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+		dbColumnNames.put("uuid", "uuid_");
+		dbColumnNames.put("type", "type_");
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+				"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -2063,11 +2085,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public void cacheResult(ApiAiData apiAiData) {
-		entityCache.putResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataImpl.class, apiAiData.getPrimaryKey(), apiAiData);
+		entityCache.putResult(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED, ApiAiDataImpl.class,
+			apiAiData.getPrimaryKey(), apiAiData);
 
-		finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G,
-			new Object[] { apiAiData.getUuid(), apiAiData.getGroupId() },
+		finderCache.putResult(
+			_finderPathFetchByUUID_G,
+			new Object[] {apiAiData.getUuid(), apiAiData.getGroupId()},
 			apiAiData);
 
 		apiAiData.resetOriginalValues();
@@ -2081,8 +2105,10 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	@Override
 	public void cacheResult(List<ApiAiData> apiAiDatas) {
 		for (ApiAiData apiAiData : apiAiDatas) {
-			if (entityCache.getResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-						ApiAiDataImpl.class, apiAiData.getPrimaryKey()) == null) {
+			if (entityCache.getResult(
+					ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+					ApiAiDataImpl.class, apiAiData.getPrimaryKey()) == null) {
+
 				cacheResult(apiAiData);
 			}
 			else {
@@ -2095,7 +2121,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Clears the cache for all api ai datas.
 	 *
 	 * <p>
-	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
+	 * The <code>EntityCache</code> and <code>FinderCache</code> are both cleared by this method.
 	 * </p>
 	 */
 	@Override
@@ -2111,18 +2137,19 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Clears the cache for the api ai data.
 	 *
 	 * <p>
-	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
+	 * The <code>EntityCache</code> and <code>FinderCache</code> are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(ApiAiData apiAiData) {
-		entityCache.removeResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataImpl.class, apiAiData.getPrimaryKey());
+		entityCache.removeResult(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED, ApiAiDataImpl.class,
+			apiAiData.getPrimaryKey());
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((ApiAiDataModelImpl)apiAiData);
+		clearUniqueFindersCache((ApiAiDataModelImpl)apiAiData, true);
 	}
 
 	@Override
@@ -2131,60 +2158,49 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (ApiAiData apiAiData : apiAiDatas) {
-			entityCache.removeResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-				ApiAiDataImpl.class, apiAiData.getPrimaryKey());
+			entityCache.removeResult(
+				ApiAiDataModelImpl.ENTITY_CACHE_ENABLED, ApiAiDataImpl.class,
+				apiAiData.getPrimaryKey());
 
-			clearUniqueFindersCache((ApiAiDataModelImpl)apiAiData);
+			clearUniqueFindersCache((ApiAiDataModelImpl)apiAiData, true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		ApiAiDataModelImpl apiAiDataModelImpl, boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					apiAiDataModelImpl.getUuid(),
-					apiAiDataModelImpl.getGroupId()
-				};
+		ApiAiDataModelImpl apiAiDataModelImpl) {
 
-			finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
-				apiAiDataModelImpl);
-		}
-		else {
-			if ((apiAiDataModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						apiAiDataModelImpl.getUuid(),
-						apiAiDataModelImpl.getGroupId()
-					};
+		Object[] args = new Object[] {
+			apiAiDataModelImpl.getUuid(), apiAiDataModelImpl.getGroupId()
+		};
 
-				finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
-					apiAiDataModelImpl);
-			}
-		}
+		finderCache.putResult(
+			_finderPathCountByUUID_G, args, Long.valueOf(1), false);
+		finderCache.putResult(
+			_finderPathFetchByUUID_G, args, apiAiDataModelImpl, false);
 	}
 
 	protected void clearUniqueFindersCache(
-		ApiAiDataModelImpl apiAiDataModelImpl) {
-		Object[] args = new Object[] {
+		ApiAiDataModelImpl apiAiDataModelImpl, boolean clearCurrent) {
+
+		if (clearCurrent) {
+			Object[] args = new Object[] {
 				apiAiDataModelImpl.getUuid(), apiAiDataModelImpl.getGroupId()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+			finderCache.removeResult(_finderPathCountByUUID_G, args);
+			finderCache.removeResult(_finderPathFetchByUUID_G, args);
+		}
 
 		if ((apiAiDataModelImpl.getColumnBitmask() &
-				FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
-			args = new Object[] {
-					apiAiDataModelImpl.getOriginalUuid(),
-					apiAiDataModelImpl.getOriginalGroupId()
-				};
+			 _finderPathFetchByUUID_G.getColumnBitmask()) != 0) {
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
-			finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+			Object[] args = new Object[] {
+				apiAiDataModelImpl.getOriginalUuid(),
+				apiAiDataModelImpl.getOriginalGroupId()
+			};
+
+			finderCache.removeResult(_finderPathCountByUUID_G, args);
+			finderCache.removeResult(_finderPathFetchByUUID_G, args);
 		}
 	}
 
@@ -2232,21 +2248,22 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	@Override
 	public ApiAiData remove(Serializable primaryKey)
 		throws NoSuchApiAiDataException {
+
 		Session session = null;
 
 		try {
 			session = openSession();
 
-			ApiAiData apiAiData = (ApiAiData)session.get(ApiAiDataImpl.class,
-					primaryKey);
+			ApiAiData apiAiData = (ApiAiData)session.get(
+				ApiAiDataImpl.class, primaryKey);
 
 			if (apiAiData == null) {
 				if (_log.isDebugEnabled()) {
 					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
-				throw new NoSuchApiAiDataException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-					primaryKey);
+				throw new NoSuchApiAiDataException(
+					_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			return remove(apiAiData);
@@ -2264,16 +2281,14 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 	@Override
 	protected ApiAiData removeImpl(ApiAiData apiAiData) {
-		apiAiData = toUnwrappedModel(apiAiData);
-
 		Session session = null;
 
 		try {
 			session = openSession();
 
 			if (!session.contains(apiAiData)) {
-				apiAiData = (ApiAiData)session.get(ApiAiDataImpl.class,
-						apiAiData.getPrimaryKeyObj());
+				apiAiData = (ApiAiData)session.get(
+					ApiAiDataImpl.class, apiAiData.getPrimaryKeyObj());
 			}
 
 			if (apiAiData != null) {
@@ -2296,9 +2311,23 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 	@Override
 	public ApiAiData updateImpl(ApiAiData apiAiData) {
-		apiAiData = toUnwrappedModel(apiAiData);
-
 		boolean isNew = apiAiData.isNew();
+
+		if (!(apiAiData instanceof ApiAiDataModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(apiAiData.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(apiAiData);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in apiAiData proxy " +
+						invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ApiAiData implementation " +
+					apiAiData.getClass());
+		}
 
 		ApiAiDataModelImpl apiAiDataModelImpl = (ApiAiDataModelImpl)apiAiData;
 
@@ -2308,7 +2337,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			apiAiData.setUuid(uuid);
 		}
 
-		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
 
 		Date now = new Date();
 
@@ -2353,111 +2383,118 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !ApiAiDataModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!ApiAiDataModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+		else if (isNew) {
+			Object[] args = new Object[] {apiAiDataModelImpl.getUuid()};
 
+			finderCache.removeResult(_finderPathCountByUuid, args);
+			finderCache.removeResult(
+				_finderPathWithoutPaginationFindByUuid, args);
+
+			args = new Object[] {
+				apiAiDataModelImpl.getUuid(), apiAiDataModelImpl.getCompanyId()
+			};
+
+			finderCache.removeResult(_finderPathCountByUuid_C, args);
+			finderCache.removeResult(
+				_finderPathWithoutPaginationFindByUuid_C, args);
+
+			args = new Object[] {
+				apiAiDataModelImpl.getUserId(),
+				apiAiDataModelImpl.getCreateDate()
+			};
+
+			finderCache.removeResult(_finderPathCountByUserId, args);
+			finderCache.removeResult(
+				_finderPathWithoutPaginationFindByUserId, args);
+
+			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(
+				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
+		}
 		else {
 			if ((apiAiDataModelImpl.getColumnBitmask() &
-					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID.getColumnBitmask()) != 0) {
+				 _finderPathWithoutPaginationFindByUuid.getColumnBitmask()) !=
+					 0) {
+
 				Object[] args = new Object[] {
-						apiAiDataModelImpl.getOriginalUuid()
-					};
+					apiAiDataModelImpl.getOriginalUuid()
+				};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
-					args);
+				finderCache.removeResult(_finderPathCountByUuid, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByUuid, args);
 
-				args = new Object[] { apiAiDataModelImpl.getUuid() };
+				args = new Object[] {apiAiDataModelImpl.getUuid()};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
-					args);
+				finderCache.removeResult(_finderPathCountByUuid, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByUuid, args);
 			}
 
 			if ((apiAiDataModelImpl.getColumnBitmask() &
-					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						apiAiDataModelImpl.getOriginalUuid(),
-						apiAiDataModelImpl.getOriginalCompanyId()
-					};
+				 _finderPathWithoutPaginationFindByUuid_C.getColumnBitmask()) !=
+					 0) {
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
-					args);
+				Object[] args = new Object[] {
+					apiAiDataModelImpl.getOriginalUuid(),
+					apiAiDataModelImpl.getOriginalCompanyId()
+				};
+
+				finderCache.removeResult(_finderPathCountByUuid_C, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByUuid_C, args);
 
 				args = new Object[] {
-						apiAiDataModelImpl.getUuid(),
-						apiAiDataModelImpl.getCompanyId()
-					};
+					apiAiDataModelImpl.getUuid(),
+					apiAiDataModelImpl.getCompanyId()
+				};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
-					args);
+				finderCache.removeResult(_finderPathCountByUuid_C, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByUuid_C, args);
 			}
 
 			if ((apiAiDataModelImpl.getColumnBitmask() &
-					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						apiAiDataModelImpl.getOriginalUserId(),
-						apiAiDataModelImpl.getOriginalCreateDate()
-					};
+				 _finderPathWithoutPaginationFindByUserId.getColumnBitmask()) !=
+					 0) {
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
-					args);
+				Object[] args = new Object[] {
+					apiAiDataModelImpl.getOriginalUserId(),
+					apiAiDataModelImpl.getOriginalCreateDate()
+				};
+
+				finderCache.removeResult(_finderPathCountByUserId, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByUserId, args);
 
 				args = new Object[] {
-						apiAiDataModelImpl.getUserId(),
-						apiAiDataModelImpl.getCreateDate()
-					};
+					apiAiDataModelImpl.getUserId(),
+					apiAiDataModelImpl.getCreateDate()
+				};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
-					args);
+				finderCache.removeResult(_finderPathCountByUserId, args);
+				finderCache.removeResult(
+					_finderPathWithoutPaginationFindByUserId, args);
 			}
 		}
 
-		entityCache.putResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-			ApiAiDataImpl.class, apiAiData.getPrimaryKey(), apiAiData, false);
+		entityCache.putResult(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED, ApiAiDataImpl.class,
+			apiAiData.getPrimaryKey(), apiAiData, false);
 
-		clearUniqueFindersCache(apiAiDataModelImpl);
-		cacheUniqueFindersCache(apiAiDataModelImpl, isNew);
+		clearUniqueFindersCache(apiAiDataModelImpl, false);
+		cacheUniqueFindersCache(apiAiDataModelImpl);
 
 		apiAiData.resetOriginalValues();
 
 		return apiAiData;
 	}
 
-	protected ApiAiData toUnwrappedModel(ApiAiData apiAiData) {
-		if (apiAiData instanceof ApiAiDataImpl) {
-			return apiAiData;
-		}
-
-		ApiAiDataImpl apiAiDataImpl = new ApiAiDataImpl();
-
-		apiAiDataImpl.setNew(apiAiData.isNew());
-		apiAiDataImpl.setPrimaryKey(apiAiData.getPrimaryKey());
-
-		apiAiDataImpl.setUuid(apiAiData.getUuid());
-		apiAiDataImpl.setApiAiDataId(apiAiData.getApiAiDataId());
-		apiAiDataImpl.setGroupId(apiAiData.getGroupId());
-		apiAiDataImpl.setCompanyId(apiAiData.getCompanyId());
-		apiAiDataImpl.setUserId(apiAiData.getUserId());
-		apiAiDataImpl.setUserName(apiAiData.getUserName());
-		apiAiDataImpl.setCreateDate(apiAiData.getCreateDate());
-		apiAiDataImpl.setModifiedDate(apiAiData.getModifiedDate());
-		apiAiDataImpl.setType(apiAiData.getType());
-		apiAiDataImpl.setResult(apiAiData.getResult());
-		apiAiDataImpl.setAction(apiAiData.getAction());
-		apiAiDataImpl.setFulfillment(apiAiData.getFulfillment());
-		apiAiDataImpl.setSpeech(apiAiData.getSpeech());
-
-		return apiAiDataImpl;
-	}
-
 	/**
-	 * Returns the api ai data with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
+	 * Returns the api ai data with the primary key or throws a <code>com.liferay.portal.kernel.exception.NoSuchModelException</code> if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the api ai data
 	 * @return the api ai data
@@ -2466,6 +2503,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	@Override
 	public ApiAiData findByPrimaryKey(Serializable primaryKey)
 		throws NoSuchApiAiDataException {
+
 		ApiAiData apiAiData = fetchByPrimaryKey(primaryKey);
 
 		if (apiAiData == null) {
@@ -2473,15 +2511,15 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
-			throw new NoSuchApiAiDataException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-				primaryKey);
+			throw new NoSuchApiAiDataException(
+				_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 		}
 
 		return apiAiData;
 	}
 
 	/**
-	 * Returns the api ai data with the primary key or throws a {@link NoSuchApiAiDataException} if it could not be found.
+	 * Returns the api ai data with the primary key or throws a <code>NoSuchApiAiDataException</code> if it could not be found.
 	 *
 	 * @param apiAiDataId the primary key of the api ai data
 	 * @return the api ai data
@@ -2490,6 +2528,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	@Override
 	public ApiAiData findByPrimaryKey(long apiAiDataId)
 		throws NoSuchApiAiDataException {
+
 		return findByPrimaryKey((Serializable)apiAiDataId);
 	}
 
@@ -2501,8 +2540,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public ApiAiData fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-				ApiAiDataImpl.class, primaryKey);
+		Serializable serializable = entityCache.getResult(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED, ApiAiDataImpl.class,
+			primaryKey);
 
 		if (serializable == nullModel) {
 			return null;
@@ -2516,19 +2556,21 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			try {
 				session = openSession();
 
-				apiAiData = (ApiAiData)session.get(ApiAiDataImpl.class,
-						primaryKey);
+				apiAiData = (ApiAiData)session.get(
+					ApiAiDataImpl.class, primaryKey);
 
 				if (apiAiData != null) {
 					cacheResult(apiAiData);
 				}
 				else {
-					entityCache.putResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(
+						ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
 						ApiAiDataImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
-				entityCache.removeResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(
+					ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
 					ApiAiDataImpl.class, primaryKey);
 
 				throw processException(e);
@@ -2555,11 +2597,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	@Override
 	public Map<Serializable, ApiAiData> fetchByPrimaryKeys(
 		Set<Serializable> primaryKeys) {
+
 		if (primaryKeys.isEmpty()) {
 			return Collections.emptyMap();
 		}
 
-		Map<Serializable, ApiAiData> map = new HashMap<Serializable, ApiAiData>();
+		Map<Serializable, ApiAiData> map =
+			new HashMap<Serializable, ApiAiData>();
 
 		if (primaryKeys.size() == 1) {
 			Iterator<Serializable> iterator = primaryKeys.iterator();
@@ -2578,8 +2622,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
-					ApiAiDataImpl.class, primaryKey);
+			Serializable serializable = entityCache.getResult(
+				ApiAiDataModelImpl.ENTITY_CACHE_ENABLED, ApiAiDataImpl.class,
+				primaryKey);
 
 			if (serializable != nullModel) {
 				if (serializable == null) {
@@ -2599,20 +2644,20 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			return map;
 		}
 
-		StringBundler query = new StringBundler((uncachedPrimaryKeys.size() * 2) +
-				1);
+		StringBundler query = new StringBundler(
+			uncachedPrimaryKeys.size() * 2 + 1);
 
 		query.append(_SQL_SELECT_APIAIDATA_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 
@@ -2632,7 +2677,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(
+					ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
 					ApiAiDataImpl.class, primaryKey, nullModel);
 			}
 		}
@@ -2660,7 +2706,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns a range of all the api ai datas.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of api ai datas
@@ -2676,7 +2722,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns an ordered range of all the api ai datas.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of api ai datas
@@ -2685,8 +2731,9 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findAll(int start, int end,
-		OrderByComparator<ApiAiData> orderByComparator) {
+	public List<ApiAiData> findAll(
+		int start, int end, OrderByComparator<ApiAiData> orderByComparator) {
+
 		return findAll(start, end, orderByComparator, true);
 	}
 
@@ -2694,7 +2741,7 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Returns an ordered range of all the api ai datas.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link ApiAiDataModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ApiAiDataModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of api ai datas
@@ -2704,29 +2751,31 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * @return the ordered range of api ai datas
 	 */
 	@Override
-	public List<ApiAiData> findAll(int start, int end,
-		OrderByComparator<ApiAiData> orderByComparator,
+	public List<ApiAiData> findAll(
+		int start, int end, OrderByComparator<ApiAiData> orderByComparator,
 		boolean retrieveFromCache) {
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-				(orderByComparator == null)) {
+			(orderByComparator == null)) {
+
 			pagination = false;
-			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL;
+			finderPath = _finderPathWithoutPaginationFindAll;
 			finderArgs = FINDER_ARGS_EMPTY;
 		}
 		else {
-			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_ALL;
-			finderArgs = new Object[] { start, end, orderByComparator };
+			finderPath = _finderPathWithPaginationFindAll;
+			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<ApiAiData> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<ApiAiData>)finderCache.getResult(finderPath,
-					finderArgs, this);
+			list = (List<ApiAiData>)finderCache.getResult(
+				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
@@ -2734,13 +2783,13 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(2 +
-						(orderByComparator.getOrderByFields().length * 2));
+				query = new StringBundler(
+					2 + (orderByComparator.getOrderByFields().length * 2));
 
 				query.append(_SQL_SELECT_APIAIDATA);
 
-				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
 				sql = query.toString();
 			}
@@ -2760,16 +2809,16 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 				Query q = session.createQuery(sql);
 
 				if (!pagination) {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end, false);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end, false);
 
 					Collections.sort(list);
 
 					list = Collections.unmodifiableList(list);
 				}
 				else {
-					list = (List<ApiAiData>)QueryUtil.list(q, getDialect(),
-							start, end);
+					list = (List<ApiAiData>)QueryUtil.list(
+						q, getDialect(), start, end);
 				}
 
 				cacheResult(list);
@@ -2807,8 +2856,8 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
-				FINDER_ARGS_EMPTY, this);
+		Long count = (Long)finderCache.getResult(
+			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
 			Session session = null;
@@ -2820,12 +2869,12 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
-					count);
+				finderCache.putResult(
+					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY);
+				finderCache.removeResult(
+					_finderPathCountAll, FINDER_ARGS_EMPTY);
 
 				throw processException(e);
 			}
@@ -2851,6 +2900,106 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 	 * Initializes the api ai data persistence.
 	 */
 	public void afterPropertiesSet() {
+		_finderPathWithPaginationFindAll = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+
+		_finderPathWithoutPaginationFindAll = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
+			new String[0]);
+
+		_finderPathCountAll = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
+			new String[0]);
+
+		_finderPathWithPaginationFindByUuid = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid",
+			new String[] {
+				String.class.getName(), Integer.class.getName(),
+				Integer.class.getName(), OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByUuid = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid",
+			new String[] {String.class.getName()},
+			ApiAiDataModelImpl.UUID_COLUMN_BITMASK);
+
+		_finderPathCountByUuid = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid",
+			new String[] {String.class.getName()});
+
+		_finderPathFetchByUUID_G = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_ENTITY, "fetchByUUID_G",
+			new String[] {String.class.getName(), Long.class.getName()},
+			ApiAiDataModelImpl.UUID_COLUMN_BITMASK |
+			ApiAiDataModelImpl.GROUPID_COLUMN_BITMASK);
+
+		_finderPathCountByUUID_G = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUUID_G",
+			new String[] {String.class.getName(), Long.class.getName()});
+
+		_finderPathWithPaginationFindByUuid_C = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid_C",
+			new String[] {
+				String.class.getName(), Long.class.getName(),
+				Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByUuid_C = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid_C",
+			new String[] {String.class.getName(), Long.class.getName()},
+			ApiAiDataModelImpl.UUID_COLUMN_BITMASK |
+			ApiAiDataModelImpl.COMPANYID_COLUMN_BITMASK);
+
+		_finderPathCountByUuid_C = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid_C",
+			new String[] {String.class.getName(), Long.class.getName()});
+
+		_finderPathWithPaginationFindByUserId = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUserId",
+			new String[] {
+				Long.class.getName(), Date.class.getName(),
+				Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
+			});
+
+		_finderPathWithoutPaginationFindByUserId = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, ApiAiDataImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUserId",
+			new String[] {Long.class.getName(), Date.class.getName()},
+			ApiAiDataModelImpl.USERID_COLUMN_BITMASK |
+			ApiAiDataModelImpl.CREATEDATE_COLUMN_BITMASK);
+
+		_finderPathCountByUserId = new FinderPath(
+			ApiAiDataModelImpl.ENTITY_CACHE_ENABLED,
+			ApiAiDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUserId",
+			new String[] {Long.class.getName(), Date.class.getName()});
 	}
 
 	public void destroy() {
@@ -2862,20 +3011,48 @@ public class ApiAiDataPersistenceImpl extends BasePersistenceImpl<ApiAiData>
 
 	@ServiceReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
+
 	@ServiceReference(type = EntityCache.class)
 	protected EntityCache entityCache;
+
 	@ServiceReference(type = FinderCache.class)
 	protected FinderCache finderCache;
-	private static final String _SQL_SELECT_APIAIDATA = "SELECT apiAiData FROM ApiAiData apiAiData";
-	private static final String _SQL_SELECT_APIAIDATA_WHERE_PKS_IN = "SELECT apiAiData FROM ApiAiData apiAiData WHERE apiAiDataId IN (";
-	private static final String _SQL_SELECT_APIAIDATA_WHERE = "SELECT apiAiData FROM ApiAiData apiAiData WHERE ";
-	private static final String _SQL_COUNT_APIAIDATA = "SELECT COUNT(apiAiData) FROM ApiAiData apiAiData";
-	private static final String _SQL_COUNT_APIAIDATA_WHERE = "SELECT COUNT(apiAiData) FROM ApiAiData apiAiData WHERE ";
+
+	private Long _getTime(Date date) {
+		if (date == null) {
+			return null;
+		}
+
+		return date.getTime();
+	}
+
+	private static final String _SQL_SELECT_APIAIDATA =
+		"SELECT apiAiData FROM ApiAiData apiAiData";
+
+	private static final String _SQL_SELECT_APIAIDATA_WHERE_PKS_IN =
+		"SELECT apiAiData FROM ApiAiData apiAiData WHERE apiAiDataId IN (";
+
+	private static final String _SQL_SELECT_APIAIDATA_WHERE =
+		"SELECT apiAiData FROM ApiAiData apiAiData WHERE ";
+
+	private static final String _SQL_COUNT_APIAIDATA =
+		"SELECT COUNT(apiAiData) FROM ApiAiData apiAiData";
+
+	private static final String _SQL_COUNT_APIAIDATA_WHERE =
+		"SELECT COUNT(apiAiData) FROM ApiAiData apiAiData WHERE ";
+
 	private static final String _ORDER_BY_ENTITY_ALIAS = "apiAiData.";
-	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No ApiAiData exists with the primary key ";
-	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No ApiAiData exists with the key {";
-	private static final Log _log = LogFactoryUtil.getLog(ApiAiDataPersistenceImpl.class);
-	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
-				"uuid", "type"
-			});
+
+	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY =
+		"No ApiAiData exists with the primary key ";
+
+	private static final String _NO_SUCH_ENTITY_WITH_KEY =
+		"No ApiAiData exists with the key {";
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ApiAiDataPersistenceImpl.class);
+
+	private static final Set<String> _badColumnNames = SetUtil.fromArray(
+		new String[] {"uuid", "type"});
+
 }

@@ -25,19 +25,20 @@ import com.liferay.portal.kernel.util.Accessor;
  *
  * @author Brian Wing Shun Chan
  * @see ApiAiDataModel
- * @see com.liferay.kris.apiai.model.impl.ApiAiDataImpl
- * @see com.liferay.kris.apiai.model.impl.ApiAiDataModelImpl
  * @generated
  */
 @ImplementationClassName("com.liferay.kris.apiai.model.impl.ApiAiDataImpl")
 @ProviderType
 public interface ApiAiData extends ApiAiDataModel, PersistedModel {
+
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never modify this interface directly. Add methods to {@link com.liferay.kris.apiai.model.impl.ApiAiDataImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
+	 * Never modify this interface directly. Add methods to <code>com.liferay.kris.apiai.model.impl.ApiAiDataImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
-	public static final Accessor<ApiAiData, Long> API_AI_DATA_ID_ACCESSOR = new Accessor<ApiAiData, Long>() {
+	public static final Accessor<ApiAiData, Long> API_AI_DATA_ID_ACCESSOR =
+		new Accessor<ApiAiData, Long>() {
+
 			@Override
 			public Long get(ApiAiData apiAiData) {
 				return apiAiData.getApiAiDataId();
@@ -52,5 +53,7 @@ public interface ApiAiData extends ApiAiDataModel, PersistedModel {
 			public Class<ApiAiData> getTypeClass() {
 				return ApiAiData.class;
 			}
+
 		};
+
 }

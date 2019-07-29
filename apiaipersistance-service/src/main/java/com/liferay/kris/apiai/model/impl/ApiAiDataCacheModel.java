@@ -17,11 +17,9 @@ package com.liferay.kris.apiai.model.impl;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.kris.apiai.model.ApiAiData;
-
 import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -34,12 +32,12 @@ import java.util.Date;
  * The cache model class for representing ApiAiData in entity cache.
  *
  * @author Brian Wing Shun Chan
- * @see ApiAiData
  * @generated
  */
 @ProviderType
-public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
-	Externalizable {
+public class ApiAiDataCacheModel
+	implements CacheModel<ApiAiData>, Externalizable {
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -104,7 +102,7 @@ public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
 		ApiAiDataImpl apiAiDataImpl = new ApiAiDataImpl();
 
 		if (uuid == null) {
-			apiAiDataImpl.setUuid(StringPool.BLANK);
+			apiAiDataImpl.setUuid("");
 		}
 		else {
 			apiAiDataImpl.setUuid(uuid);
@@ -116,7 +114,7 @@ public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
 		apiAiDataImpl.setUserId(userId);
 
 		if (userName == null) {
-			apiAiDataImpl.setUserName(StringPool.BLANK);
+			apiAiDataImpl.setUserName("");
 		}
 		else {
 			apiAiDataImpl.setUserName(userName);
@@ -137,35 +135,35 @@ public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
 		}
 
 		if (type == null) {
-			apiAiDataImpl.setType(StringPool.BLANK);
+			apiAiDataImpl.setType("");
 		}
 		else {
 			apiAiDataImpl.setType(type);
 		}
 
 		if (result == null) {
-			apiAiDataImpl.setResult(StringPool.BLANK);
+			apiAiDataImpl.setResult("");
 		}
 		else {
 			apiAiDataImpl.setResult(result);
 		}
 
 		if (action == null) {
-			apiAiDataImpl.setAction(StringPool.BLANK);
+			apiAiDataImpl.setAction("");
 		}
 		else {
 			apiAiDataImpl.setAction(action);
 		}
 
 		if (fulfillment == null) {
-			apiAiDataImpl.setFulfillment(StringPool.BLANK);
+			apiAiDataImpl.setFulfillment("");
 		}
 		else {
 			apiAiDataImpl.setFulfillment(fulfillment);
 		}
 
 		if (speech == null) {
-			apiAiDataImpl.setSpeech(StringPool.BLANK);
+			apiAiDataImpl.setSpeech("");
 		}
 		else {
 			apiAiDataImpl.setSpeech(speech);
@@ -198,10 +196,9 @@ public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
 	}
 
 	@Override
-	public void writeExternal(ObjectOutput objectOutput)
-		throws IOException {
+	public void writeExternal(ObjectOutput objectOutput) throws IOException {
 		if (uuid == null) {
-			objectOutput.writeUTF(StringPool.BLANK);
+			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(uuid);
@@ -216,7 +213,7 @@ public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
 		objectOutput.writeLong(userId);
 
 		if (userName == null) {
-			objectOutput.writeUTF(StringPool.BLANK);
+			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(userName);
@@ -226,35 +223,35 @@ public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
 		objectOutput.writeLong(modifiedDate);
 
 		if (type == null) {
-			objectOutput.writeUTF(StringPool.BLANK);
+			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(type);
 		}
 
 		if (result == null) {
-			objectOutput.writeUTF(StringPool.BLANK);
+			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(result);
 		}
 
 		if (action == null) {
-			objectOutput.writeUTF(StringPool.BLANK);
+			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(action);
 		}
 
 		if (fulfillment == null) {
-			objectOutput.writeUTF(StringPool.BLANK);
+			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(fulfillment);
 		}
 
 		if (speech == null) {
-			objectOutput.writeUTF(StringPool.BLANK);
+			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(speech);
@@ -274,4 +271,5 @@ public class ApiAiDataCacheModel implements CacheModel<ApiAiData>,
 	public String action;
 	public String fulfillment;
 	public String speech;
+
 }

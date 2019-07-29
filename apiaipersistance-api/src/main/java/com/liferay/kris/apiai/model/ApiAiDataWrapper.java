@@ -17,9 +17,7 @@ package com.liferay.kris.apiai.model;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.expando.kernel.model.ExpandoBridge;
-
 import com.liferay.exportimport.kernel.lar.StagedModelType;
-
 import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.service.ServiceContext;
 
@@ -41,6 +39,7 @@ import java.util.Objects;
  */
 @ProviderType
 public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
+
 	public ApiAiDataWrapper(ApiAiData apiAiData) {
 		_apiAiData = apiAiData;
 	}
@@ -158,13 +157,178 @@ public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
 	}
 
 	@Override
-	public ApiAiData toEscapedModel() {
-		return new ApiAiDataWrapper(_apiAiData.toEscapedModel());
+	public Object clone() {
+		return new ApiAiDataWrapper((ApiAiData)_apiAiData.clone());
 	}
 
 	@Override
-	public ApiAiData toUnescapedModel() {
-		return new ApiAiDataWrapper(_apiAiData.toUnescapedModel());
+	public int compareTo(ApiAiData apiAiData) {
+		return _apiAiData.compareTo(apiAiData);
+	}
+
+	/**
+	 * Returns the action of this api ai data.
+	 *
+	 * @return the action of this api ai data
+	 */
+	@Override
+	public String getAction() {
+		return _apiAiData.getAction();
+	}
+
+	/**
+	 * Returns the api ai data ID of this api ai data.
+	 *
+	 * @return the api ai data ID of this api ai data
+	 */
+	@Override
+	public long getApiAiDataId() {
+		return _apiAiData.getApiAiDataId();
+	}
+
+	/**
+	 * Returns the company ID of this api ai data.
+	 *
+	 * @return the company ID of this api ai data
+	 */
+	@Override
+	public long getCompanyId() {
+		return _apiAiData.getCompanyId();
+	}
+
+	/**
+	 * Returns the create date of this api ai data.
+	 *
+	 * @return the create date of this api ai data
+	 */
+	@Override
+	public Date getCreateDate() {
+		return _apiAiData.getCreateDate();
+	}
+
+	@Override
+	public ExpandoBridge getExpandoBridge() {
+		return _apiAiData.getExpandoBridge();
+	}
+
+	/**
+	 * Returns the fulfillment of this api ai data.
+	 *
+	 * @return the fulfillment of this api ai data
+	 */
+	@Override
+	public String getFulfillment() {
+		return _apiAiData.getFulfillment();
+	}
+
+	/**
+	 * Returns the group ID of this api ai data.
+	 *
+	 * @return the group ID of this api ai data
+	 */
+	@Override
+	public long getGroupId() {
+		return _apiAiData.getGroupId();
+	}
+
+	/**
+	 * Returns the modified date of this api ai data.
+	 *
+	 * @return the modified date of this api ai data
+	 */
+	@Override
+	public Date getModifiedDate() {
+		return _apiAiData.getModifiedDate();
+	}
+
+	/**
+	 * Returns the primary key of this api ai data.
+	 *
+	 * @return the primary key of this api ai data
+	 */
+	@Override
+	public long getPrimaryKey() {
+		return _apiAiData.getPrimaryKey();
+	}
+
+	@Override
+	public Serializable getPrimaryKeyObj() {
+		return _apiAiData.getPrimaryKeyObj();
+	}
+
+	/**
+	 * Returns the result of this api ai data.
+	 *
+	 * @return the result of this api ai data
+	 */
+	@Override
+	public String getResult() {
+		return _apiAiData.getResult();
+	}
+
+	/**
+	 * Returns the speech of this api ai data.
+	 *
+	 * @return the speech of this api ai data
+	 */
+	@Override
+	public String getSpeech() {
+		return _apiAiData.getSpeech();
+	}
+
+	/**
+	 * Returns the type of this api ai data.
+	 *
+	 * @return the type of this api ai data
+	 */
+	@Override
+	public String getType() {
+		return _apiAiData.getType();
+	}
+
+	/**
+	 * Returns the user ID of this api ai data.
+	 *
+	 * @return the user ID of this api ai data
+	 */
+	@Override
+	public long getUserId() {
+		return _apiAiData.getUserId();
+	}
+
+	/**
+	 * Returns the user name of this api ai data.
+	 *
+	 * @return the user name of this api ai data
+	 */
+	@Override
+	public String getUserName() {
+		return _apiAiData.getUserName();
+	}
+
+	/**
+	 * Returns the user uuid of this api ai data.
+	 *
+	 * @return the user uuid of this api ai data
+	 */
+	@Override
+	public String getUserUuid() {
+		return _apiAiData.getUserUuid();
+	}
+
+	/**
+	 * Returns the uuid of this api ai data.
+	 *
+	 * @return the uuid of this api ai data
+	 */
+	@Override
+	public String getUuid() {
+		return _apiAiData.getUuid();
+	}
+
+	@Override
+	public int hashCode() {
+		return _apiAiData.hashCode();
 	}
 
 	@Override
@@ -183,215 +347,25 @@ public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
 	}
 
 	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _apiAiData.getExpandoBridge();
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel<ApiAiData> toCacheModel() {
-		return _apiAiData.toCacheModel();
-	}
-
-	@Override
-	public int compareTo(ApiAiData apiAiData) {
-		return _apiAiData.compareTo(apiAiData);
-	}
-
-	@Override
-	public int hashCode() {
-		return _apiAiData.hashCode();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _apiAiData.getPrimaryKeyObj();
-	}
-
-	@Override
-	public java.lang.Object clone() {
-		return new ApiAiDataWrapper((ApiAiData)_apiAiData.clone());
-	}
-
-	/**
-	* Returns the action of this api ai data.
-	*
-	* @return the action of this api ai data
-	*/
-	@Override
-	public java.lang.String getAction() {
-		return _apiAiData.getAction();
-	}
-
-	/**
-	* Returns the fulfillment of this api ai data.
-	*
-	* @return the fulfillment of this api ai data
-	*/
-	@Override
-	public java.lang.String getFulfillment() {
-		return _apiAiData.getFulfillment();
-	}
-
-	/**
-	* Returns the result of this api ai data.
-	*
-	* @return the result of this api ai data
-	*/
-	@Override
-	public java.lang.String getResult() {
-		return _apiAiData.getResult();
-	}
-
-	/**
-	* Returns the speech of this api ai data.
-	*
-	* @return the speech of this api ai data
-	*/
-	@Override
-	public java.lang.String getSpeech() {
-		return _apiAiData.getSpeech();
-	}
-
-	/**
-	* Returns the type of this api ai data.
-	*
-	* @return the type of this api ai data
-	*/
-	@Override
-	public java.lang.String getType() {
-		return _apiAiData.getType();
-	}
-
-	/**
-	* Returns the user name of this api ai data.
-	*
-	* @return the user name of this api ai data
-	*/
-	@Override
-	public java.lang.String getUserName() {
-		return _apiAiData.getUserName();
-	}
-
-	/**
-	* Returns the user uuid of this api ai data.
-	*
-	* @return the user uuid of this api ai data
-	*/
-	@Override
-	public java.lang.String getUserUuid() {
-		return _apiAiData.getUserUuid();
-	}
-
-	/**
-	* Returns the uuid of this api ai data.
-	*
-	* @return the uuid of this api ai data
-	*/
-	@Override
-	public java.lang.String getUuid() {
-		return _apiAiData.getUuid();
-	}
-
-	@Override
-	public java.lang.String toString() {
-		return _apiAiData.toString();
-	}
-
-	@Override
-	public java.lang.String toXmlString() {
-		return _apiAiData.toXmlString();
-	}
-
-	/**
-	* Returns the create date of this api ai data.
-	*
-	* @return the create date of this api ai data
-	*/
-	@Override
-	public Date getCreateDate() {
-		return _apiAiData.getCreateDate();
-	}
-
-	/**
-	* Returns the modified date of this api ai data.
-	*
-	* @return the modified date of this api ai data
-	*/
-	@Override
-	public Date getModifiedDate() {
-		return _apiAiData.getModifiedDate();
-	}
-
-	/**
-	* Returns the api ai data ID of this api ai data.
-	*
-	* @return the api ai data ID of this api ai data
-	*/
-	@Override
-	public long getApiAiDataId() {
-		return _apiAiData.getApiAiDataId();
-	}
-
-	/**
-	* Returns the company ID of this api ai data.
-	*
-	* @return the company ID of this api ai data
-	*/
-	@Override
-	public long getCompanyId() {
-		return _apiAiData.getCompanyId();
-	}
-
-	/**
-	* Returns the group ID of this api ai data.
-	*
-	* @return the group ID of this api ai data
-	*/
-	@Override
-	public long getGroupId() {
-		return _apiAiData.getGroupId();
-	}
-
-	/**
-	* Returns the primary key of this api ai data.
-	*
-	* @return the primary key of this api ai data
-	*/
-	@Override
-	public long getPrimaryKey() {
-		return _apiAiData.getPrimaryKey();
-	}
-
-	/**
-	* Returns the user ID of this api ai data.
-	*
-	* @return the user ID of this api ai data
-	*/
-	@Override
-	public long getUserId() {
-		return _apiAiData.getUserId();
-	}
-
-	@Override
 	public void persist() {
 		_apiAiData.persist();
 	}
 
 	/**
-	* Sets the action of this api ai data.
-	*
-	* @param action the action of this api ai data
-	*/
+	 * Sets the action of this api ai data.
+	 *
+	 * @param action the action of this api ai data
+	 */
 	@Override
-	public void setAction(java.lang.String action) {
+	public void setAction(String action) {
 		_apiAiData.setAction(action);
 	}
 
 	/**
-	* Sets the api ai data ID of this api ai data.
-	*
-	* @param apiAiDataId the api ai data ID of this api ai data
-	*/
+	 * Sets the api ai data ID of this api ai data.
+	 *
+	 * @param apiAiDataId the api ai data ID of this api ai data
+	 */
 	@Override
 	public void setApiAiDataId(long apiAiDataId) {
 		_apiAiData.setApiAiDataId(apiAiDataId);
@@ -403,23 +377,30 @@ public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
 	}
 
 	/**
-	* Sets the company ID of this api ai data.
-	*
-	* @param companyId the company ID of this api ai data
-	*/
+	 * Sets the company ID of this api ai data.
+	 *
+	 * @param companyId the company ID of this api ai data
+	 */
 	@Override
 	public void setCompanyId(long companyId) {
 		_apiAiData.setCompanyId(companyId);
 	}
 
 	/**
-	* Sets the create date of this api ai data.
-	*
-	* @param createDate the create date of this api ai data
-	*/
+	 * Sets the create date of this api ai data.
+	 *
+	 * @param createDate the create date of this api ai data
+	 */
 	@Override
 	public void setCreateDate(Date createDate) {
 		_apiAiData.setCreateDate(createDate);
+	}
+
+	@Override
+	public void setExpandoBridgeAttributes(
+		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
+
+		_apiAiData.setExpandoBridgeAttributes(baseModel);
 	}
 
 	@Override
@@ -428,41 +409,35 @@ public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
 	}
 
 	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-		_apiAiData.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
 		_apiAiData.setExpandoBridgeAttributes(serviceContext);
 	}
 
 	/**
-	* Sets the fulfillment of this api ai data.
-	*
-	* @param fulfillment the fulfillment of this api ai data
-	*/
+	 * Sets the fulfillment of this api ai data.
+	 *
+	 * @param fulfillment the fulfillment of this api ai data
+	 */
 	@Override
-	public void setFulfillment(java.lang.String fulfillment) {
+	public void setFulfillment(String fulfillment) {
 		_apiAiData.setFulfillment(fulfillment);
 	}
 
 	/**
-	* Sets the group ID of this api ai data.
-	*
-	* @param groupId the group ID of this api ai data
-	*/
+	 * Sets the group ID of this api ai data.
+	 *
+	 * @param groupId the group ID of this api ai data
+	 */
 	@Override
 	public void setGroupId(long groupId) {
 		_apiAiData.setGroupId(groupId);
 	}
 
 	/**
-	* Sets the modified date of this api ai data.
-	*
-	* @param modifiedDate the modified date of this api ai data
-	*/
+	 * Sets the modified date of this api ai data.
+	 *
+	 * @param modifiedDate the modified date of this api ai data
+	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
 		_apiAiData.setModifiedDate(modifiedDate);
@@ -474,10 +449,10 @@ public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
 	}
 
 	/**
-	* Sets the primary key of this api ai data.
-	*
-	* @param primaryKey the primary key of this api ai data
-	*/
+	 * Sets the primary key of this api ai data.
+	 *
+	 * @param primaryKey the primary key of this api ai data
+	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		_apiAiData.setPrimaryKey(primaryKey);
@@ -489,73 +464,100 @@ public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
 	}
 
 	/**
-	* Sets the result of this api ai data.
-	*
-	* @param result the result of this api ai data
-	*/
+	 * Sets the result of this api ai data.
+	 *
+	 * @param result the result of this api ai data
+	 */
 	@Override
-	public void setResult(java.lang.String result) {
+	public void setResult(String result) {
 		_apiAiData.setResult(result);
 	}
 
 	/**
-	* Sets the speech of this api ai data.
-	*
-	* @param speech the speech of this api ai data
-	*/
+	 * Sets the speech of this api ai data.
+	 *
+	 * @param speech the speech of this api ai data
+	 */
 	@Override
-	public void setSpeech(java.lang.String speech) {
+	public void setSpeech(String speech) {
 		_apiAiData.setSpeech(speech);
 	}
 
 	/**
-	* Sets the type of this api ai data.
-	*
-	* @param type the type of this api ai data
-	*/
+	 * Sets the type of this api ai data.
+	 *
+	 * @param type the type of this api ai data
+	 */
 	@Override
-	public void setType(java.lang.String type) {
+	public void setType(String type) {
 		_apiAiData.setType(type);
 	}
 
 	/**
-	* Sets the user ID of this api ai data.
-	*
-	* @param userId the user ID of this api ai data
-	*/
+	 * Sets the user ID of this api ai data.
+	 *
+	 * @param userId the user ID of this api ai data
+	 */
 	@Override
 	public void setUserId(long userId) {
 		_apiAiData.setUserId(userId);
 	}
 
 	/**
-	* Sets the user name of this api ai data.
-	*
-	* @param userName the user name of this api ai data
-	*/
+	 * Sets the user name of this api ai data.
+	 *
+	 * @param userName the user name of this api ai data
+	 */
 	@Override
-	public void setUserName(java.lang.String userName) {
+	public void setUserName(String userName) {
 		_apiAiData.setUserName(userName);
 	}
 
 	/**
-	* Sets the user uuid of this api ai data.
-	*
-	* @param userUuid the user uuid of this api ai data
-	*/
+	 * Sets the user uuid of this api ai data.
+	 *
+	 * @param userUuid the user uuid of this api ai data
+	 */
 	@Override
-	public void setUserUuid(java.lang.String userUuid) {
+	public void setUserUuid(String userUuid) {
 		_apiAiData.setUserUuid(userUuid);
 	}
 
 	/**
-	* Sets the uuid of this api ai data.
-	*
-	* @param uuid the uuid of this api ai data
-	*/
+	 * Sets the uuid of this api ai data.
+	 *
+	 * @param uuid the uuid of this api ai data
+	 */
 	@Override
-	public void setUuid(java.lang.String uuid) {
+	public void setUuid(String uuid) {
 		_apiAiData.setUuid(uuid);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.CacheModel<ApiAiData>
+		toCacheModel() {
+
+		return _apiAiData.toCacheModel();
+	}
+
+	@Override
+	public ApiAiData toEscapedModel() {
+		return new ApiAiDataWrapper(_apiAiData.toEscapedModel());
+	}
+
+	@Override
+	public String toString() {
+		return _apiAiData.toString();
+	}
+
+	@Override
+	public ApiAiData toUnescapedModel() {
+		return new ApiAiDataWrapper(_apiAiData.toUnescapedModel());
+	}
+
+	@Override
+	public String toXmlString() {
+		return _apiAiData.toXmlString();
 	}
 
 	@Override
@@ -603,4 +605,5 @@ public class ApiAiDataWrapper implements ApiAiData, ModelWrapper<ApiAiData> {
 	}
 
 	private final ApiAiData _apiAiData;
+
 }

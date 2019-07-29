@@ -26,36 +26,40 @@ import com.liferay.portal.kernel.service.ServiceWrapper;
  * @generated
  */
 @ProviderType
-public class ApiAiDataServiceWrapper implements ApiAiDataService,
-	ServiceWrapper<ApiAiDataService> {
+public class ApiAiDataServiceWrapper
+	implements ApiAiDataService, ServiceWrapper<ApiAiDataService> {
+
 	public ApiAiDataServiceWrapper(ApiAiDataService apiAiDataService) {
 		_apiAiDataService = apiAiDataService;
 	}
 
 	@Override
-	public java.lang.String addApiAiDataPersistence(
+	public String addApiAiDataPersistence(
 		com.liferay.portal.kernel.service.ServiceContext serviceContext,
-		java.lang.String query, java.lang.String authtoken,
-		java.lang.String speech, java.lang.String action,
-		java.lang.String fulfillment, java.lang.String result) {
-		return _apiAiDataService.addApiAiDataPersistence(serviceContext, query,
-			authtoken, speech, action, fulfillment, result);
+		String query, String authtoken, String speech, String action,
+		String fulfillment, String result) {
+
+		return _apiAiDataService.addApiAiDataPersistence(
+			serviceContext, query, authtoken, speech, action, fulfillment,
+			result);
 	}
 
 	/**
-	* Returns the OSGi service identifier.
-	*
-	* @return the OSGi service identifier
-	*/
+	 * Returns the OSGi service identifier.
+	 *
+	 * @return the OSGi service identifier
+	 */
 	@Override
-	public java.lang.String getOSGiServiceIdentifier() {
+	public String getOSGiServiceIdentifier() {
 		return _apiAiDataService.getOSGiServiceIdentifier();
 	}
 
 	@Override
-	public java.util.List<com.liferay.kris.apiai.model.ApiAiData> getRecentConversation(
-		com.liferay.portal.kernel.service.ServiceContext serviceContext,
-		int records) {
+	public java.util.List<com.liferay.kris.apiai.model.ApiAiData>
+		getRecentConversation(
+			com.liferay.portal.kernel.service.ServiceContext serviceContext,
+			int records) {
+
 		return _apiAiDataService.getRecentConversation(serviceContext, records);
 	}
 
@@ -70,4 +74,5 @@ public class ApiAiDataServiceWrapper implements ApiAiDataService,
 	}
 
 	private ApiAiDataService _apiAiDataService;
+
 }

@@ -16,11 +16,9 @@ package com.liferay.kris.apiai.service.base;
 
 import com.liferay.asset.kernel.service.persistence.AssetEntryPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetTagPersistence;
-
 import com.liferay.kris.apiai.model.ApiAiData;
 import com.liferay.kris.apiai.service.ApiAiDataService;
 import com.liferay.kris.apiai.service.persistence.ApiAiDataPersistence;
-
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
@@ -45,15 +43,16 @@ import javax.sql.DataSource;
  *
  * @author Brian Wing Shun Chan
  * @see com.liferay.kris.apiai.service.impl.ApiAiDataServiceImpl
- * @see com.liferay.kris.apiai.service.ApiAiDataServiceUtil
  * @generated
  */
-public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
+public abstract class ApiAiDataServiceBaseImpl
+	extends BaseServiceImpl
 	implements ApiAiDataService, IdentifiableOSGiService {
+
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never modify or reference this class directly. Always use {@link com.liferay.kris.apiai.service.ApiAiDataServiceUtil} to access the api ai data remote service.
+	 * Never modify or reference this class directly. Use <code>ApiAiDataService</code> via injection or a <code>org.osgi.util.tracker.ServiceTracker</code> or use <code>com.liferay.kris.apiai.service.ApiAiDataServiceUtil</code>.
 	 */
 
 	/**
@@ -61,7 +60,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the api ai data local service
 	 */
-	public com.liferay.kris.apiai.service.ApiAiDataLocalService getApiAiDataLocalService() {
+	public com.liferay.kris.apiai.service.ApiAiDataLocalService
+		getApiAiDataLocalService() {
+
 		return apiAiDataLocalService;
 	}
 
@@ -71,7 +72,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 * @param apiAiDataLocalService the api ai data local service
 	 */
 	public void setApiAiDataLocalService(
-		com.liferay.kris.apiai.service.ApiAiDataLocalService apiAiDataLocalService) {
+		com.liferay.kris.apiai.service.ApiAiDataLocalService
+			apiAiDataLocalService) {
+
 		this.apiAiDataLocalService = apiAiDataLocalService;
 	}
 
@@ -109,6 +112,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setApiAiDataPersistence(
 		ApiAiDataPersistence apiAiDataPersistence) {
+
 		this.apiAiDataPersistence = apiAiDataPersistence;
 	}
 
@@ -117,7 +121,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the counter local service
 	 */
-	public com.liferay.counter.kernel.service.CounterLocalService getCounterLocalService() {
+	public com.liferay.counter.kernel.service.CounterLocalService
+		getCounterLocalService() {
+
 		return counterLocalService;
 	}
 
@@ -127,7 +133,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 * @param counterLocalService the counter local service
 	 */
 	public void setCounterLocalService(
-		com.liferay.counter.kernel.service.CounterLocalService counterLocalService) {
+		com.liferay.counter.kernel.service.CounterLocalService
+			counterLocalService) {
+
 		this.counterLocalService = counterLocalService;
 	}
 
@@ -136,7 +144,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the class name local service
 	 */
-	public com.liferay.portal.kernel.service.ClassNameLocalService getClassNameLocalService() {
+	public com.liferay.portal.kernel.service.ClassNameLocalService
+		getClassNameLocalService() {
+
 		return classNameLocalService;
 	}
 
@@ -146,7 +156,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 * @param classNameLocalService the class name local service
 	 */
 	public void setClassNameLocalService(
-		com.liferay.portal.kernel.service.ClassNameLocalService classNameLocalService) {
+		com.liferay.portal.kernel.service.ClassNameLocalService
+			classNameLocalService) {
+
 		this.classNameLocalService = classNameLocalService;
 	}
 
@@ -155,7 +167,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the class name remote service
 	 */
-	public com.liferay.portal.kernel.service.ClassNameService getClassNameService() {
+	public com.liferay.portal.kernel.service.ClassNameService
+		getClassNameService() {
+
 		return classNameService;
 	}
 
@@ -166,6 +180,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setClassNameService(
 		com.liferay.portal.kernel.service.ClassNameService classNameService) {
+
 		this.classNameService = classNameService;
 	}
 
@@ -185,6 +200,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setClassNamePersistence(
 		ClassNamePersistence classNamePersistence) {
+
 		this.classNamePersistence = classNamePersistence;
 	}
 
@@ -193,7 +209,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the resource local service
 	 */
-	public com.liferay.portal.kernel.service.ResourceLocalService getResourceLocalService() {
+	public com.liferay.portal.kernel.service.ResourceLocalService
+		getResourceLocalService() {
+
 		return resourceLocalService;
 	}
 
@@ -203,7 +221,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 * @param resourceLocalService the resource local service
 	 */
 	public void setResourceLocalService(
-		com.liferay.portal.kernel.service.ResourceLocalService resourceLocalService) {
+		com.liferay.portal.kernel.service.ResourceLocalService
+			resourceLocalService) {
+
 		this.resourceLocalService = resourceLocalService;
 	}
 
@@ -212,7 +232,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the user local service
 	 */
-	public com.liferay.portal.kernel.service.UserLocalService getUserLocalService() {
+	public com.liferay.portal.kernel.service.UserLocalService
+		getUserLocalService() {
+
 		return userLocalService;
 	}
 
@@ -223,6 +245,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setUserLocalService(
 		com.liferay.portal.kernel.service.UserLocalService userLocalService) {
+
 		this.userLocalService = userLocalService;
 	}
 
@@ -242,6 +265,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setUserService(
 		com.liferay.portal.kernel.service.UserService userService) {
+
 		this.userService = userService;
 	}
 
@@ -268,7 +292,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the asset entry local service
 	 */
-	public com.liferay.asset.kernel.service.AssetEntryLocalService getAssetEntryLocalService() {
+	public com.liferay.asset.kernel.service.AssetEntryLocalService
+		getAssetEntryLocalService() {
+
 		return assetEntryLocalService;
 	}
 
@@ -278,7 +304,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 * @param assetEntryLocalService the asset entry local service
 	 */
 	public void setAssetEntryLocalService(
-		com.liferay.asset.kernel.service.AssetEntryLocalService assetEntryLocalService) {
+		com.liferay.asset.kernel.service.AssetEntryLocalService
+			assetEntryLocalService) {
+
 		this.assetEntryLocalService = assetEntryLocalService;
 	}
 
@@ -287,7 +315,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the asset entry remote service
 	 */
-	public com.liferay.asset.kernel.service.AssetEntryService getAssetEntryService() {
+	public com.liferay.asset.kernel.service.AssetEntryService
+		getAssetEntryService() {
+
 		return assetEntryService;
 	}
 
@@ -298,6 +328,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setAssetEntryService(
 		com.liferay.asset.kernel.service.AssetEntryService assetEntryService) {
+
 		this.assetEntryService = assetEntryService;
 	}
 
@@ -317,6 +348,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setAssetEntryPersistence(
 		AssetEntryPersistence assetEntryPersistence) {
+
 		this.assetEntryPersistence = assetEntryPersistence;
 	}
 
@@ -325,7 +357,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the asset tag local service
 	 */
-	public com.liferay.asset.kernel.service.AssetTagLocalService getAssetTagLocalService() {
+	public com.liferay.asset.kernel.service.AssetTagLocalService
+		getAssetTagLocalService() {
+
 		return assetTagLocalService;
 	}
 
@@ -335,7 +369,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 * @param assetTagLocalService the asset tag local service
 	 */
 	public void setAssetTagLocalService(
-		com.liferay.asset.kernel.service.AssetTagLocalService assetTagLocalService) {
+		com.liferay.asset.kernel.service.AssetTagLocalService
+			assetTagLocalService) {
+
 		this.assetTagLocalService = assetTagLocalService;
 	}
 
@@ -344,7 +380,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the asset tag remote service
 	 */
-	public com.liferay.asset.kernel.service.AssetTagService getAssetTagService() {
+	public com.liferay.asset.kernel.service.AssetTagService
+		getAssetTagService() {
+
 		return assetTagService;
 	}
 
@@ -355,6 +393,7 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 */
 	public void setAssetTagService(
 		com.liferay.asset.kernel.service.AssetTagService assetTagService) {
+
 		this.assetTagService = assetTagService;
 	}
 
@@ -372,7 +411,9 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @param assetTagPersistence the asset tag persistence
 	 */
-	public void setAssetTagPersistence(AssetTagPersistence assetTagPersistence) {
+	public void setAssetTagPersistence(
+		AssetTagPersistence assetTagPersistence) {
+
 		this.assetTagPersistence = assetTagPersistence;
 	}
 
@@ -414,8 +455,8 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 			sql = db.buildSQL(sql);
 			sql = PortalUtil.transformSQL(sql);
 
-			SqlUpdate sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(dataSource,
-					sql);
+			SqlUpdate sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(
+				dataSource, sql);
 
 			sqlUpdate.update();
 		}
@@ -424,38 +465,86 @@ public abstract class ApiAiDataServiceBaseImpl extends BaseServiceImpl
 		}
 	}
 
-	@BeanReference(type = com.liferay.kris.apiai.service.ApiAiDataLocalService.class)
-	protected com.liferay.kris.apiai.service.ApiAiDataLocalService apiAiDataLocalService;
+	@BeanReference(
+		type = com.liferay.kris.apiai.service.ApiAiDataLocalService.class
+	)
+	protected com.liferay.kris.apiai.service.ApiAiDataLocalService
+		apiAiDataLocalService;
+
 	@BeanReference(type = ApiAiDataService.class)
 	protected ApiAiDataService apiAiDataService;
+
 	@BeanReference(type = ApiAiDataPersistence.class)
 	protected ApiAiDataPersistence apiAiDataPersistence;
-	@ServiceReference(type = com.liferay.counter.kernel.service.CounterLocalService.class)
-	protected com.liferay.counter.kernel.service.CounterLocalService counterLocalService;
-	@ServiceReference(type = com.liferay.portal.kernel.service.ClassNameLocalService.class)
-	protected com.liferay.portal.kernel.service.ClassNameLocalService classNameLocalService;
-	@ServiceReference(type = com.liferay.portal.kernel.service.ClassNameService.class)
-	protected com.liferay.portal.kernel.service.ClassNameService classNameService;
+
+	@ServiceReference(
+		type = com.liferay.counter.kernel.service.CounterLocalService.class
+	)
+	protected com.liferay.counter.kernel.service.CounterLocalService
+		counterLocalService;
+
+	@ServiceReference(
+		type = com.liferay.portal.kernel.service.ClassNameLocalService.class
+	)
+	protected com.liferay.portal.kernel.service.ClassNameLocalService
+		classNameLocalService;
+
+	@ServiceReference(
+		type = com.liferay.portal.kernel.service.ClassNameService.class
+	)
+	protected com.liferay.portal.kernel.service.ClassNameService
+		classNameService;
+
 	@ServiceReference(type = ClassNamePersistence.class)
 	protected ClassNamePersistence classNamePersistence;
-	@ServiceReference(type = com.liferay.portal.kernel.service.ResourceLocalService.class)
-	protected com.liferay.portal.kernel.service.ResourceLocalService resourceLocalService;
-	@ServiceReference(type = com.liferay.portal.kernel.service.UserLocalService.class)
-	protected com.liferay.portal.kernel.service.UserLocalService userLocalService;
-	@ServiceReference(type = com.liferay.portal.kernel.service.UserService.class)
+
+	@ServiceReference(
+		type = com.liferay.portal.kernel.service.ResourceLocalService.class
+	)
+	protected com.liferay.portal.kernel.service.ResourceLocalService
+		resourceLocalService;
+
+	@ServiceReference(
+		type = com.liferay.portal.kernel.service.UserLocalService.class
+	)
+	protected com.liferay.portal.kernel.service.UserLocalService
+		userLocalService;
+
+	@ServiceReference(
+		type = com.liferay.portal.kernel.service.UserService.class
+	)
 	protected com.liferay.portal.kernel.service.UserService userService;
+
 	@ServiceReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	@ServiceReference(type = com.liferay.asset.kernel.service.AssetEntryLocalService.class)
-	protected com.liferay.asset.kernel.service.AssetEntryLocalService assetEntryLocalService;
-	@ServiceReference(type = com.liferay.asset.kernel.service.AssetEntryService.class)
-	protected com.liferay.asset.kernel.service.AssetEntryService assetEntryService;
+
+	@ServiceReference(
+		type = com.liferay.asset.kernel.service.AssetEntryLocalService.class
+	)
+	protected com.liferay.asset.kernel.service.AssetEntryLocalService
+		assetEntryLocalService;
+
+	@ServiceReference(
+		type = com.liferay.asset.kernel.service.AssetEntryService.class
+	)
+	protected com.liferay.asset.kernel.service.AssetEntryService
+		assetEntryService;
+
 	@ServiceReference(type = AssetEntryPersistence.class)
 	protected AssetEntryPersistence assetEntryPersistence;
-	@ServiceReference(type = com.liferay.asset.kernel.service.AssetTagLocalService.class)
-	protected com.liferay.asset.kernel.service.AssetTagLocalService assetTagLocalService;
-	@ServiceReference(type = com.liferay.asset.kernel.service.AssetTagService.class)
+
+	@ServiceReference(
+		type = com.liferay.asset.kernel.service.AssetTagLocalService.class
+	)
+	protected com.liferay.asset.kernel.service.AssetTagLocalService
+		assetTagLocalService;
+
+	@ServiceReference(
+		type = com.liferay.asset.kernel.service.AssetTagService.class
+	)
 	protected com.liferay.asset.kernel.service.AssetTagService assetTagService;
+
 	@ServiceReference(type = AssetTagPersistence.class)
 	protected AssetTagPersistence assetTagPersistence;
+
 }
